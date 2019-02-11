@@ -23,7 +23,7 @@ public class Verification {
 		JsonElement data = rootObj.get("data");
 		String data_string = data.getAsString();
 		System.out.println("Data:");
-		System.out.println(data_string.substring(0,1000));
+		//System.out.println(data_string.substring(0,1000));
 		System.out.println(data_string.substring(0,data_string.length()));
 		System.out.println("End");
 		return "XML code received by the server";
