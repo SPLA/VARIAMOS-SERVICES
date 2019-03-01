@@ -20,6 +20,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import components.fragop.Fragmental;
+import lexermain.MainParser;
 
 @Controller
 public class DomainImplementation {
@@ -39,8 +40,6 @@ public class DomainImplementation {
 	    String data_string = data.getAsString();
 	    JsonArray rootArray = parser.parse(data_string).getAsJsonArray();
 	    JsonArray rootFiles = rootArray.get(0).getAsJsonArray();
-	    JsonArray rootCustomization = rootArray.get(1).getAsJsonArray();
-	    JsonArray rootParser = rootArray.get(2).getAsJsonArray();
 	    
 	    List<Map<String, String>> files = new ArrayList<>();
 	    for (int i = 0; i < rootFiles.size(); i++) {
@@ -77,6 +76,39 @@ public class DomainImplementation {
 	    }
 		
 		return completedMessage;
+	}
+	
+	@CrossOrigin
+	@RequestMapping(value="/DomainImplementation/verify", method=RequestMethod.POST, produces="text/plain")
+	@ResponseBody
+	public String verifyDerivation(@RequestBody String data_collected) {
+		String completedMessage="";
+		boolean some_files=false;
+		Resource resource_derived = new ClassPathResource("/uploads/component_derived/");
+		JsonParser parser = new JsonParser();
+		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
+		JsonElement data = rootObj.get("data");
+	    String data_string = data.getAsString();
+	    JsonArray rootArray = parser.parse(data_string).getAsJsonArray();
+	    
+	    ArrayList<String> destinations = new ArrayList<>();
+	    for (int i = 0; i < rootArray.size(); i++) {
+	    	some_files=true;
+	    	destinations.add(rootArray.get(i).getAsString());
+	    }
+	    
+	    if(some_files) {
+	    	if(resource_derived.exists()) {
+				try {
+					completedMessage=MainParser.executeParser(resource_derived.getFile(), destinations);
+				}catch(Exception e){
+	                System.out.println(e.getMessage());
+	            }
+	    	}
+	    }else {
+	    	completedMessage="No components assembled";
+	    }
+	    return completedMessage;
 	}
 	
 }
