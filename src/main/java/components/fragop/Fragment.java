@@ -257,21 +257,17 @@ public class Fragment {
     }
     
     //customization functions
-    
-    public static String get_customization_code(String ID, String cpoint, String plan) {
+    public static String get_customization_code(String destination, String cpoint, String plan) {
     	String file_code = "";
     	String customization_code = "";
-    	Map<String, String> component_file = new HashMap<String, String>();
-    	component_file = get_fragment_by_ID(ID);
     	List<String> comment_block_tags=get_comment_block(plan);
     	
-    	File source_f_to_modify = new File(assembled_folder+"/"+component_file.get("destination"));
+    	File source_f_to_modify = new File(assembled_folder+"/"+destination);
         if(source_f_to_modify.exists()){
             try{
             	file_code = FileUtilsApache.readFileToString(source_f_to_modify, "utf-8");
             	String string_search = comment_block_tags.get(0)+"BCP-"+cpoint+comment_block_tags.get(1);
                 String string_search2 = comment_block_tags.get(0)+"ECP-"+cpoint+comment_block_tags.get(1);
-                
                 int pos_init = file_code.indexOf(string_search);
                 int pos_final = file_code.indexOf(string_search2);
                 
@@ -286,13 +282,10 @@ public class Fragment {
     	return customization_code;
     }
     
-    public static void set_customization_code(String ID, String cpoint, String plan, String customized_code) {
+    public static void set_customization_code(String destination, String cpoint, String plan, String customized_code) {
     	String file_code = "";
-    	Map<String, String> component_file = new HashMap<String, String>();
-    	component_file = get_fragment_by_ID(ID);
     	List<String> comment_block_tags=get_comment_block(plan);
-    	
-    	File source_f_to_modify = new File(assembled_folder+"/"+component_file.get("destination")); 	
+    	File source_f_to_modify = new File(assembled_folder+"/"+destination); 	
     	
     	if(source_f_to_modify.exists()){
             try{

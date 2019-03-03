@@ -165,19 +165,20 @@ public class Fragmental {
     }
     
     //start customization functions
-    public static ArrayList<String> check_file(String filedest){
+    public static ArrayList<String> check_folder(String component, File pool){
     	ArrayList<String> data_file = new ArrayList<String>();
-    	File source_f = new File(assets_folder+"/"+filedest);
+        assets_folder=pool;
+    	File source_f = new File(assets_folder+"/"+component+"/customization.json");
         if(source_f.exists()){
             try{
                 String f_content = FileUtilsApache.readFileToString(source_f, "utf-8");
                 JSONObject json = new JSONObject(f_content);
                 
                 if (json.get("CustomizationPoints") instanceof JSONArray) {
+                	data_file.add("multiple");
                 	JSONArray cpoints = (JSONArray) json.get("CustomizationPoints");
                 	JSONArray plans = (JSONArray) json.get("PointBracketsLans");
                 	JSONArray ids = (JSONArray) json.get("IDs");
-                	data_file.add("multiple");
                 	data_file.add(Integer.toString(cpoints.length()));
 
                 	for (int i = 0; i < cpoints.length(); i++) {
@@ -189,10 +190,11 @@ public class Fragmental {
 	                	data_file.add(plan);
                 	}
                 }else {
+                	data_file.add("single");
+                	data_file.add("1");
                 	String cpoint = json.getString("CustomizationPoints");
                 	String plan = json.getString("PointBracketsLans");
                 	String id = json.getString("IDs");
-                	data_file.add("one");
                 	data_file.add(id);
                 	data_file.add(cpoint);
                 	data_file.add(plan);
@@ -202,17 +204,18 @@ public class Fragmental {
             	//error_var.add(e.getMessage()+e.getStackTrace());
             }
         }else {
-        	data_file.add("no");
+        	data_file.add("error");
         }
     	return data_file;
     }
     
-    public static String customize_one(String ID, String cpoint, String plan){
-    	return Fragment.get_customization_code(ID, cpoint, plan);
+    public static String customize_one(String destination, String cpoint, String plan){
+    	Fragment.assembled_folder=Fragmental.assembled_folder;
+    	return Fragment.get_customization_code(destination, cpoint, plan);
     }
     
-    public static void set_customize_one(String ID, String cpoint, String plan, String ccode){
-    	Fragment.set_customization_code(ID, cpoint, plan, ccode);
+    public static void set_customize_one(String destination, String cpoint, String plan, String ccode){
+    	Fragment.set_customization_code(destination, cpoint, plan, ccode);
     }
     
 }

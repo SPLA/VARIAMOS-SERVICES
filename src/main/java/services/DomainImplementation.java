@@ -9,11 +9,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -110,5 +112,58 @@ public class DomainImplementation {
 	    }
 	    return completedMessage;
 	}
+	
+	@CrossOrigin
+	@RequestMapping(value="/DomainImplementation/customize/{type}", method=RequestMethod.POST, produces="text/plain")
+	@ResponseBody
+	public String customizeDerivation(@RequestBody String data_collected, @PathVariable String type) {
+		String completedMessage="";
+		Resource resource_pool = new ClassPathResource("/uploads/component_pool/");
+		Resource resource_derived = new ClassPathResource("/uploads/component_derived/");
+		try {
+			Fragmental.assembled_folder=resource_derived.getFile();
+		}
+		catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+		JsonParser parser = new JsonParser();
+		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
+		JsonElement data = rootObj.get("data");
+	    String data_string = data.getAsString();
+	    JsonArray rootArray = parser.parse(data_string).getAsJsonArray();
+	    ArrayList<String> data_row = new ArrayList<String>();
+	    ArrayList<ArrayList<String>> data_to_return = new ArrayList<ArrayList<String>>();
+	    String component="";
+	    
+	    if(type.equals("start")) {
+	    	for (int i = 0; i < rootArray.size(); i++) {
+		    	component=rootArray.get(i).getAsString();
+		    	if(resource_pool.exists()) {
+					try {
+						data_row = Fragmental.check_folder(component,resource_pool.getFile());
+						data_to_return.add(data_row);
+					}
+					catch(Exception e){
+		                System.out.println(e.getMessage());
+		            }
+		    	}
+		    }
+	    	
+		    Gson gson = new Gson();
+		    return gson.toJson(data_to_return);
+	    }else if(type.equals("next")) {
+	    	if(rootArray.size()>3) {
+	    		Fragmental.set_customize_one(rootArray.get(3).getAsString(),rootArray.get(4).getAsString(),rootArray.get(5).getAsString(),rootArray.get(6).getAsString());
+	    	}
+	    	return Fragmental.customize_one(rootArray.get(0).getAsString(),rootArray.get(1).getAsString(),rootArray.get(2).getAsString());
+	    }else if(type.equals("onlysave")) {
+	    	Fragmental.set_customize_one(rootArray.get(0).getAsString(),rootArray.get(1).getAsString(),rootArray.get(2).getAsString(),rootArray.get(3).getAsString());
+	    	return "";
+	    }else {
+	    	return "";
+	    }
+	   
+	}
+	
 	
 }
