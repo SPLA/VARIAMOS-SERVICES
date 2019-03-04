@@ -1,5 +1,7 @@
 package services;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +15,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -27,6 +32,9 @@ import lexermain.MainParser;
 @Controller
 public class DomainImplementation {
 	
+	public static Resource resource_derived = new ClassPathResource("/uploads/component_derived/");
+	public static Resource resource_pool = new ClassPathResource("/uploads/component_pool/");
+	
 	@CrossOrigin
 	@RequestMapping(value="/DomainImplementation/execute", method=RequestMethod.POST, produces="text/plain")
 	@ResponseBody
@@ -34,8 +42,6 @@ public class DomainImplementation {
 		
 		String completedMessage="";
 		boolean some_files=false;
-		Resource resource_derived = new ClassPathResource("/uploads/component_derived/");
-		Resource resource_pool = new ClassPathResource("/uploads/component_pool/");
 		JsonParser parser = new JsonParser();
 		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
 		JsonElement data = rootObj.get("data");
@@ -86,7 +92,6 @@ public class DomainImplementation {
 	public String verifyDerivation(@RequestBody String data_collected) {
 		String completedMessage="";
 		boolean some_files=false;
-		Resource resource_derived = new ClassPathResource("/uploads/component_derived/");
 		JsonParser parser = new JsonParser();
 		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
 		JsonElement data = rootObj.get("data");
@@ -114,12 +119,31 @@ public class DomainImplementation {
 	}
 	
 	@CrossOrigin
+	@RequestMapping(value="/DomainImplementation/uploadfile", consumes = {"multipart/form-data"}, method=RequestMethod.POST)
+	@ResponseBody
+    public String uploadFile(@RequestParam("dest") String dest, @RequestPart("file") MultipartFile file) throws Exception{
+        File derivation = resource_derived.getFile();
+        if (!file.isEmpty()) {
+            try {
+            	File convFile = new File(derivation+"/"+dest);
+                convFile.createNewFile();
+                FileOutputStream fos = new FileOutputStream(convFile); 
+                fos.write(file.getBytes());
+                fos.close();
+                return "uploaded";
+            } catch (Exception e) {
+                return "error" + e.getMessage();
+            }
+        } else {
+            return "error";
+        }
+
+    }
+	
+	@CrossOrigin
 	@RequestMapping(value="/DomainImplementation/customize/{type}", method=RequestMethod.POST, produces="text/plain")
 	@ResponseBody
 	public String customizeDerivation(@RequestBody String data_collected, @PathVariable String type) {
-		String completedMessage="";
-		Resource resource_pool = new ClassPathResource("/uploads/component_pool/");
-		Resource resource_derived = new ClassPathResource("/uploads/component_derived/");
 		try {
 			Fragmental.assembled_folder=resource_derived.getFile();
 		}
@@ -153,11 +177,25 @@ public class DomainImplementation {
 		    return gson.toJson(data_to_return);
 	    }else if(type.equals("next")) {
 	    	if(rootArray.size()>3) {
-	    		Fragmental.set_customize_one(rootArray.get(3).getAsString(),rootArray.get(4).getAsString(),rootArray.get(5).getAsString(),rootArray.get(6).getAsString());
+	    		if(rootArray.get(4).getAsString().equals("") && rootArray.get(5).getAsString().equals("")) {
+	    			//
+	    		}else {
+	    			Fragmental.set_customize_one(rootArray.get(3).getAsString(),rootArray.get(4).getAsString(),rootArray.get(5).getAsString(),rootArray.get(6).getAsString());
+	    		}
 	    	}
-	    	return Fragmental.customize_one(rootArray.get(0).getAsString(),rootArray.get(1).getAsString(),rootArray.get(2).getAsString());
+	    	
+	    	if(rootArray.get(1).getAsString().equals("") && rootArray.get(2).getAsString().equals("")) {
+	    		return "file";
+	    	}else {
+	    		return Fragmental.customize_one(rootArray.get(0).getAsString(),rootArray.get(1).getAsString(),rootArray.get(2).getAsString());
+	    	}
+	    	
 	    }else if(type.equals("onlysave")) {
-	    	Fragmental.set_customize_one(rootArray.get(0).getAsString(),rootArray.get(1).getAsString(),rootArray.get(2).getAsString(),rootArray.get(3).getAsString());
+	    	if(rootArray.get(1).getAsString().equals("") && rootArray.get(2).getAsString().equals("")) {
+	    		//
+	    	}else {
+	    		Fragmental.set_customize_one(rootArray.get(0).getAsString(),rootArray.get(1).getAsString(),rootArray.get(2).getAsString(),rootArray.get(3).getAsString());
+	    	}
 	    	return "";
 	    }else {
 	    	return "";
