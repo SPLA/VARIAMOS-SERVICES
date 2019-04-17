@@ -151,6 +151,7 @@ public class Fragmental {
 	            	FileUtilsApache.copyFile(source_f, dest_f);
 	            }
 	            catch(IOException e){
+	            	System.out.println(assets_folder+"/"+component_folder+"/"+filename);
 	            	error_var.add("C04d - "+e.getMessage()+e.getStackTrace());
 	            }
 	            catch(Exception e){

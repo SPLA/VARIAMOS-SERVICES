@@ -30,13 +30,13 @@ import components.fragop.Fragmental;
 import lexermain.MainParser;
 
 @Controller
-public class DomainImplementation {
+public class ComponentImplementation {
 	
 	public static Resource resource_derived = new ClassPathResource("/uploads/component_derived/");
 	public static Resource resource_pool = new ClassPathResource("/uploads/component_pool/");
 	
 	@CrossOrigin
-	@RequestMapping(value="/DomainImplementation/execute", method=RequestMethod.POST, produces="text/plain")
+	@RequestMapping(value="/ComponentImplementation/execute", method=RequestMethod.POST, produces="text/plain")
 	@ResponseBody
 	public String executeDerivation(@RequestBody String data_collected) {
 		
@@ -46,6 +46,12 @@ public class DomainImplementation {
 		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
 		JsonElement data = rootObj.get("data");
 	    String data_string = data.getAsString();
+	    
+		JsonElement p_pool = rootObj.get("p_pool");
+		resource_pool= new ClassPathResource(p_pool.getAsString());
+		JsonElement p_derived = rootObj.get("p_derived");
+		resource_derived= new ClassPathResource(p_derived.getAsString());
+	    
 	    JsonArray rootArray = parser.parse(data_string).getAsJsonArray();
 	    JsonArray rootFiles = rootArray.get(0).getAsJsonArray();
 	    
@@ -87,7 +93,7 @@ public class DomainImplementation {
 	}
 	
 	@CrossOrigin
-	@RequestMapping(value="/DomainImplementation/verify", method=RequestMethod.POST, produces="text/plain")
+	@RequestMapping(value="/ComponentImplementation/verify", method=RequestMethod.POST, produces="text/plain")
 	@ResponseBody
 	public String verifyDerivation(@RequestBody String data_collected) {
 		String completedMessage="";
@@ -97,6 +103,9 @@ public class DomainImplementation {
 		JsonElement data = rootObj.get("data");
 	    String data_string = data.getAsString();
 	    JsonArray rootArray = parser.parse(data_string).getAsJsonArray();
+	    
+		JsonElement p_derived = rootObj.get("p_derived");
+		resource_derived= new ClassPathResource(p_derived.getAsString());
 	    
 	    ArrayList<String> destinations = new ArrayList<>();
 	    for (int i = 0; i < rootArray.size(); i++) {
@@ -119,9 +128,10 @@ public class DomainImplementation {
 	}
 	
 	@CrossOrigin
-	@RequestMapping(value="/DomainImplementation/uploadfile", consumes = {"multipart/form-data"}, method=RequestMethod.POST)
+	@RequestMapping(value="/ComponentImplementation/uploadfile", consumes = {"multipart/form-data"}, method=RequestMethod.POST)
 	@ResponseBody
-    public String uploadFile(@RequestParam("dest") String dest, @RequestPart("file") MultipartFile file) throws Exception{
+    public String uploadFile(@RequestParam("dest") String dest, @RequestParam("p_derived") String p_derived, @RequestPart("file") MultipartFile file) throws Exception{
+		resource_derived= new ClassPathResource(p_derived);
         File derivation = resource_derived.getFile();
         if (!file.isEmpty()) {
             try {
@@ -141,17 +151,23 @@ public class DomainImplementation {
     }
 	
 	@CrossOrigin
-	@RequestMapping(value="/DomainImplementation/customize/{type}", method=RequestMethod.POST, produces="text/plain")
+	@RequestMapping(value="/ComponentImplementation/customize/{type}", method=RequestMethod.POST, produces="text/plain")
 	@ResponseBody
 	public String customizeDerivation(@RequestBody String data_collected, @PathVariable String type) {
+		JsonParser parser = new JsonParser();
+		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
+		
+		JsonElement p_pool = rootObj.get("p_pool");
+		resource_pool= new ClassPathResource(p_pool.getAsString());
+		JsonElement p_derived = rootObj.get("p_derived");
+		resource_derived= new ClassPathResource(p_derived.getAsString());
+		
 		try {
 			Fragmental.assembled_folder=resource_derived.getFile();
 		}
 		catch(Exception e){
             System.out.println(e.getMessage());
         }
-		JsonParser parser = new JsonParser();
-		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
 		JsonElement data = rootObj.get("data");
 	    String data_string = data.getAsString();
 	    JsonArray rootArray = parser.parse(data_string).getAsJsonArray();
