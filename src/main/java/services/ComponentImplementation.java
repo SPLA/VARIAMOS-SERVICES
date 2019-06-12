@@ -27,6 +27,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import components.fragop.Fragmental;
+import components.util.FileUtilsApache;
 import lexermain.MainParser;
 
 @Controller
@@ -217,6 +218,42 @@ public class ComponentImplementation {
 	    	return "";
 	    }
 	   
+	}
+	
+	@CrossOrigin 
+	@RequestMapping(value="/ComponentImplementation/getFile", method=RequestMethod.POST, produces="text/plain")
+	@ResponseBody
+	public String getFile(@RequestBody String data_collected) {
+		String completedMessage="";
+		boolean some_files=false;
+		JsonParser parser = new JsonParser();
+		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
+		JsonElement data = rootObj.get("data");
+		String dat=data.getAsString();
+		JsonObject rootObj2 = parser.parse(dat).getAsJsonObject();
+		JsonElement data2 = rootObj2.get("filename");
+		String filename = data2.getAsString();
+		JsonElement data3 = rootObj2.get("component");
+		String component = data3.getAsString();
+		String file_code="";
+
+		JsonElement p_pool = rootObj.get("p_pool");
+		resource_pool= new ClassPathResource(p_pool.getAsString());
+        try {
+    		File component_p = resource_pool.getFile();
+            File the_file = new File(component_p+"/"+component+"/"+filename);
+            if(the_file.exists()){
+                file_code = FileUtilsApache.readFileToString(the_file, "utf-8");
+            }else {
+            	file_code = "File not found";
+            }
+
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+		
+		return file_code;
 	}
 	
 	
