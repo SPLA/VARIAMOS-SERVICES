@@ -5,9 +5,6 @@
  */
 package components.fragop;
 
-//import static com.variamos.reasoning.fragop.Fragmental.assembled_folder;
-//import static com.variamos.reasoning.fragop.Fragmental.error_var;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,21 +17,19 @@ import components.util.FileUtilsApache;
  *
  * @author DanielGara
  */
-public class Fragment {
+public class Fragment implements Comparable<Fragment> {
     public String content;
     public String filename;
     public String c_folder;
     public int pos_frag;
+    public int priority;
     
-    //public static String assembled_folder="";
     public static File assets_folder;
     public static File assembled_folder;
     public static String error_var="";
 
 	public Map<String, String> data = new HashMap<String, String>();
     public static List<Map<String, String>> data_no_fragments = new ArrayList<>();
-    public static List<Fragment> fragments_pmedium = new ArrayList<Fragment>();
-    public static List<Fragment> fragments_plow = new ArrayList<Fragment>();
     
     public Fragment(String c, String f, String c_folder, int p, File assembled, File pool){
     	assembled_folder=assembled;
@@ -44,13 +39,6 @@ public class Fragment {
         this.setComponentFolder(c_folder);
         this.setPos_frag(p);
         this.parse_fragment_content();
-        if(data.get("name")==null || data.get("priority")==null || data.get("action")==null || data.get("destination")==null) {
-        	//nothing
-        }else{
-        	if(data.get("priority").equals("high")) {
-        		this.execute_actions();
-        	}
-        }
     }
 
     public String getContent() {
@@ -83,6 +71,27 @@ public class Fragment {
 
 	public void setPos_frag(int pos_frag) {
 		this.pos_frag = pos_frag;
+	}
+	
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int prio) {
+		this.priority = prio;
+	}
+	
+	public void setPriority(String prio) {
+		if(prio.equals("high")) {
+			this.priority=10;
+		}else if(prio.equals("medium")) {
+			this.priority=500;
+		}else if(prio.equals("low")){
+			this.priority=1000;
+		}else {
+			System.out.println(" - " +Integer.parseInt(prio));
+			this.priority=Integer.parseInt(prio);
+		}
 	}
 
 	public void execute_actions(){
@@ -206,6 +215,7 @@ public class Fragment {
         data.put("name",extract_string("Fragment ","{",this.content));
         data.put("action",extract_string("Action:", "\n",this.content));
         data.put("priority",extract_string("Priority:", "\n",this.content));
+        this.setPriority(extract_string("Priority:", "\n",this.content));
         data.put("fpoint",extract_string("FragmentationPoints:","\n",this.content));
         data.put("pointbracketslan",extract_string("PointBracketsLan:","\n",this.content));
         data.put("destination",extract_string("Destinations:","\n",this.content));
@@ -214,10 +224,6 @@ public class Fragment {
         
         if(data.get("name")==null || data.get("priority")==null || data.get("action")==null || data.get("destination")==null) {
         	Fragmental.error_var.add("Invalid Fragment definition for:" + this.getFilename() + " - Name, Priority, Action and Destination are required");
-        }else if(data.get("priority").equals("medium")){ //include in fragments with medium priority
-        	fragments_pmedium.add(this);
-        }else if(data.get("priority").equals("low")){ //include in fragments with low priority
-        	fragments_plow.add(this);
         }
     }
     
@@ -311,5 +317,16 @@ public class Fragment {
             }
         }  
     }
+
+	@Override
+	public int compareTo(Fragment frag) {
+		if(this.getPriority() > frag.getPriority()) {
+            return 1;
+        } else if (this.getPriority() < frag.getPriority()) {
+            return -1;
+        } else {
+            return 0;
+        }
+	}
     
 }

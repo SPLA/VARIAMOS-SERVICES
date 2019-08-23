@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -26,6 +28,7 @@ public class Fragmental {
     public static File assembled_folder;
     public static List<Map<String, String>> data;
     public static List<String> error_var;
+    public static PriorityQueue<Fragment> fragments = new PriorityQueue<Fragment>();
 
     public static void principal(List<Map<String, String>> data_received, File assembled, File pool) {
     	error_var=new ArrayList<>();
@@ -34,8 +37,8 @@ public class Fragmental {
         assembled_folder=assembled;
         assets_folder=pool;
         Fragment.data_no_fragments = new ArrayList<>();
-        Fragment.fragments_pmedium = new ArrayList<Fragment>();
-        Fragment.fragments_plow = new ArrayList<Fragment>();
+        //Fragment.fragments_pmedium = new ArrayList<Fragment>();
+        //Fragment.fragments_plow = new ArrayList<Fragment>();
         clean_directories();
         assemble_assets();
     }
@@ -60,26 +63,17 @@ public class Fragmental {
 		    }
 		}
 		
-		//fragments high
+		//fragments parse
 		for(int i=0;i<data.size();i++){
 			if(data.get(i).get("filename").equals("")) {}
 			else if(data.get(i).get("filename").contains(".frag")){
 				parse_fragment(data.get(i));
 			}
 		}
-		
-		//fragments medium 
-		if(Fragment.fragments_pmedium.size()>0) {
-			for(int i=0;i<Fragment.fragments_pmedium.size();i++){
-				Fragment.fragments_pmedium.get(i).execute_actions();
-			}
-		}
-		
-		//fragments low
-		if(Fragment.fragments_plow.size()>0) {
-			for(int i=0;i<Fragment.fragments_plow.size();i++){
-				Fragment.fragments_plow.get(i).execute_actions();
-			}
+		while(fragments.size()>0) {
+			Fragment f1= fragments.poll();
+			System.out.println(f1.getPriority()+" - " +f1.data.get("name"));
+			f1.execute_actions();
 		}
     }
     
@@ -91,6 +85,7 @@ public class Fragmental {
                 int pos_frag=0;
                 while(pos_frag!=-1) {
                 	Fragment f1 = new Fragment(f_content,fragment.get("filename"),fragment.get("component_folder"),pos_frag,assembled_folder,assets_folder);
+                	fragments.add(f1);
                 	pos_frag=extract_multiple_fragments(f_content,pos_frag);
                 }
             }
