@@ -37,8 +37,6 @@ public class Fragmental {
         assembled_folder=assembled;
         assets_folder=pool;
         Fragment.data_no_fragments = new ArrayList<>();
-        //Fragment.fragments_pmedium = new ArrayList<Fragment>();
-        //Fragment.fragments_plow = new ArrayList<Fragment>();
         clean_directories();
         assemble_assets();
     }
@@ -72,7 +70,6 @@ public class Fragmental {
 		}
 		while(fragments.size()>0) {
 			Fragment f1= fragments.poll();
-			System.out.println(f1.getPriority()+" - " +f1.data.get("name"));
 			f1.execute_actions();
 		}
     }
@@ -173,7 +170,13 @@ public class Fragmental {
                 if (json.get("CustomizationPoints") instanceof JSONArray) {
                 	data_file.add("multiple");
                 	JSONArray cpoints = (JSONArray) json.get("CustomizationPoints");
-                	JSONArray plans = (JSONArray) json.get("PointBracketsLans");
+                	JSONArray plans;
+                	try {
+                		plans = (JSONArray) json.get("PointBracketsLans");
+                	}
+                	catch(Exception e){
+                		plans = (JSONArray) json.get("PointBracketsLangs");
+                	}
                 	JSONArray ids = (JSONArray) json.get("IDs");
                 	data_file.add(Integer.toString(cpoints.length()));
 

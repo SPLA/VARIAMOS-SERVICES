@@ -162,7 +162,6 @@ public class ComponentImplementation {
 		resource_pool= new ClassPathResource(p_pool.getAsString());
 		JsonElement p_derived = rootObj.get("p_derived");
 		resource_derived= new ClassPathResource(p_derived.getAsString());
-		
 		try {
 			Fragmental.assembled_folder=resource_derived.getFile();
 		}
@@ -189,7 +188,6 @@ public class ComponentImplementation {
 		            }
 		    	}
 		    }
-	    	
 		    Gson gson = new Gson();
 		    return gson.toJson(data_to_return);
 	    }else if(type.equals("next")) {
