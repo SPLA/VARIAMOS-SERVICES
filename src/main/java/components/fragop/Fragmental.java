@@ -31,12 +31,12 @@ public class Fragmental {
     public static PriorityQueue<Fragment> fragments = new PriorityQueue<Fragment>();
 
     public static void principal(List<Map<String, String>> data_received, File assembled, File pool) {
-    	error_var=new ArrayList<>();
-    	data = new ArrayList<>();
+    	error_var=new ArrayList();
+    	data = new ArrayList();
         data=data_received;
         assembled_folder=assembled;
         assets_folder=pool;
-        Fragment.data_no_fragments = new ArrayList<>();
+        Fragment.data_no_fragments = new ArrayList();
         clean_directories();
         assemble_assets();
     }

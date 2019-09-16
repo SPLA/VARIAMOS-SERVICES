@@ -29,7 +29,7 @@ public class Fragment implements Comparable<Fragment> {
     public static String error_var="";
 
 	public Map<String, String> data = new HashMap<String, String>();
-    public static List<Map<String, String>> data_no_fragments = new ArrayList<>();
+    public static List<Map<String, String>> data_no_fragments = new ArrayList();
     
     public Fragment(String c, String f, String c_folder, int p, File assembled, File pool){
     	assembled_folder=assembled;
@@ -113,7 +113,7 @@ public class Fragment implements Comparable<Fragment> {
         	}
         }else{
         	//NO - FILES
-        	List<Map<String, String>> f_to_modify = new ArrayList<>();
+        	List<Map<String, String>> f_to_modify = new ArrayList();
 	        List<String> comment_block_tags = new ArrayList<String>();
 	        for (String s_dest: split_dest) {
 	        	f_to_modify.add(get_fragment_by_ID(s_dest));
@@ -318,7 +318,6 @@ public class Fragment implements Comparable<Fragment> {
         }  
     }
 
-	@Override
 	public int compareTo(Fragment frag) {
 		if(this.getPriority() > frag.getPriority()) {
             return 1;

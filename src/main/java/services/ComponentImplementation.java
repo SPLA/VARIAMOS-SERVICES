@@ -56,7 +56,7 @@ public class ComponentImplementation {
 	    JsonArray rootArray = parser.parse(data_string).getAsJsonArray();
 	    JsonArray rootFiles = rootArray.get(0).getAsJsonArray();
 	    
-	    List<Map<String, String>> files = new ArrayList<>();
+	    List<Map<String, String>> files = new ArrayList();
 	    for (int i = 0; i < rootFiles.size(); i++) {
 	    	some_files=true;
 		    Map<String, String> file_map = new HashMap<String, String>();
@@ -108,7 +108,7 @@ public class ComponentImplementation {
 		JsonElement p_derived = rootObj.get("p_derived");
 		resource_derived= new ClassPathResource(p_derived.getAsString());
 	    
-	    ArrayList<String> destinations = new ArrayList<>();
+	    ArrayList<String> destinations = new ArrayList();
 	    for (int i = 0; i < rootArray.size(); i++) {
 	    	some_files=true;
 	    	destinations.add(rootArray.get(i).getAsString());
