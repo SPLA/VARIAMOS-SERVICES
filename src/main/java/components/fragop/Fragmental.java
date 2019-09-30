@@ -16,6 +16,8 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 
 import components.util.FileUtilsApache;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 /**
  *
@@ -140,11 +142,24 @@ public class Fragmental {
 	                dest_path.mkdirs();
 	            }
 	            try{
-	            	FileUtilsApache.copyFile(source_f, dest_f);
+	            	String ext = getExtension(filename);
+	            	//if it is a zip file, then extract
+	            	if(ext.equals("zip")) {
+	            		try {
+	            		    ZipFile zipFile = new ZipFile(source_f);
+	            		    zipFile.extractAll(assembled_folder+"/"+destination);
+	            		} catch (ZipException e) {
+	            		    e.printStackTrace();
+	            		}
+	            		
+	            		System.out.println(filename);
+	            	}else {
+	            		FileUtilsApache.copyFile(source_f, dest_f);
+	            	}
 	            }
 	            catch(IOException e){
-	            	System.out.println(assets_folder+"/"+component_folder+"/"+filename);
-	            	error_var.add("C04d - "+e.getMessage()+e.getStackTrace());
+	            	//System.out.println(assets_folder+"/"+component_folder+"/"+filename);
+	            	//error_var.add("C04d - "+e.getMessage()+e.getStackTrace());
 	            }
 	            catch(Exception e){
 	            	error_var.add("C04 - "+e.getMessage()+e.getStackTrace());
@@ -215,6 +230,18 @@ public class Fragmental {
     
     public static void set_customize_one(String destination, String cpoint, String plan, String ccode){
     	Fragment.set_customization_code(destination, cpoint, plan, ccode);
+    }
+    
+    public static String getExtension(String filename) {
+        if (filename == null) {
+            return null;
+        }
+        int index = filename.lastIndexOf('.');
+        if (index == -1) {
+            return "";
+        } else {
+            return filename.substring(index + 1);
+        }
     }
     
 }

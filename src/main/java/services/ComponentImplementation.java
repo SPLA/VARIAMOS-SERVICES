@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -252,6 +253,46 @@ public class ComponentImplementation {
         }
 		
 		return file_code;
+	}
+	
+	@CrossOrigin 
+	@RequestMapping(value="/ComponentImplementation/getDirectoryInfo", method=RequestMethod.POST, produces="text/plain")
+	@ResponseBody
+	public String getDirectoryInfo(@RequestBody String data_collected) {
+		String completedMessage="";
+		boolean some_files=false;
+		JsonParser parser = new JsonParser();
+		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
+	    HashMap<String, String> json_directory = new HashMap<String, String>();
+		JsonElement p_pool = rootObj.get("p_pool");
+		resource_pool= new ClassPathResource(p_pool.getAsString());
+        try {
+        	File component_p = resource_pool.getFile();
+        	if (component_p.isDirectory()) {
+        		String[] subNote = component_p.list();
+        		for (String filename : subNote) {
+        			File subfolder = new File(component_p+"/"+filename);
+        			if (subfolder.isDirectory()) {
+        				String[] subNote2 = subfolder.list();
+        				for (String filename2 : subNote2) {
+                			if(json_directory.get(filename)!=null) {
+                				json_directory.put(filename, json_directory.get(filename)+"/"+filename2);
+                			}else {
+                				json_directory.put(filename, filename2);
+                			}
+        				}
+        			}
+        		}
+        	}
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        
+        Gson gson = new GsonBuilder().create();
+        String jsonString = gson.toJson(json_directory);
+		
+		return jsonString;
 	}
 	
 	
