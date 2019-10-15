@@ -1,0 +1,84 @@
+model  Domain1
+elements: 
+	boolean Logging
+	boolean Ms
+	boolean Sec
+	boolean Db
+	boolean File
+	boolean Sitestatistics
+	boolean Protocols
+	boolean Basic
+	boolean Nntp
+	boolean Ftp
+	boolean Advanced
+	boolean Sitesearch
+	boolean Webportal
+	boolean Additionalservices
+	boolean Persistance
+	boolean Webserver
+	boolean Security
+	boolean Performance
+	boolean Https
+	boolean Images
+	boolean Text
+	boolean Content
+	boolean Html
+	boolean Static
+	boolean Dynamic
+	boolean Adserver
+	boolean Active
+	boolean Asp
+	boolean Php
+	boolean Report
+	boolean Jsp
+	boolean Cgi
+	boolean Popups
+	boolean Banners
+	boolean Image
+	boolean Flash
+	boolean Minute
+	boolean Datastorage
+	boolean Datatransfer
+	boolean Keywordsupport
+	boolean Userauth
+	boolean Xml
+	boolean Database
+relations:
+	r0:group(Persistance,[Database, Xml])[1,*]
+	r1:group(Performance,[Sec, Ms, Minute])[1,*]
+	r2:group(Logging,[Db, File])[1,*]
+	r3: coreElements(Webportal)
+	r4:group(Protocols,[Https, Ftp, Nntp])[1,*]
+	r5:group(Active,[Asp, Php, Jsp, Cgi])[1,*]
+	r6:group(Security,[Datastorage, Datatransfer, Userauth])[1,*]
+	r7:decomposition(Webportal,[Performance])<0>
+	r8:decomposition(Webportal,[Security])<0>
+	r9:decomposition(Webserver,[Webportal])<1>
+	r10:decomposition(Webportal,[Persistance])<0>
+	r11:decomposition(Webportal,[Additionalservices])<0>
+	r12:decomposition(Additionalservices,[Sitestatistics])<0>
+	r13:decomposition(Basic,[Sitestatistics])<1>
+	r14:decomposition(Sitestatistics,[Advanced])<0>
+	r15:decomposition(Additionalservices,[Sitesearch])<0>
+	r16:decomposition(Sitesearch,[Images])<0>
+	r17:decomposition(Sitesearch,[Text])<0>
+	r18:decomposition(Html,[Text])<1>
+	r19:decomposition(Text,[Dynamic])<0>
+	r20:decomposition(Additionalservices,[Adserver])<0>
+	r21:decomposition(Report,[Adserver])<1>
+	r22:decomposition(Adserver,[Popups])<0>
+	r23:decomposition(Banners,[Adserver])<1>
+	r24:decomposition(Image,[Banners])<1>
+	r25:decomposition(Banners,[Flash])<0>
+	r26:decomposition(Adserver,[Keywordsupport])<0>
+	r27:decomposition(Webserver,[Logging])<0>
+	r28:decomposition(Webserver,[Protocols])<0>
+	r29:decomposition(Content,[Webserver])<1>
+	r30:decomposition(Static,[Content])<1>
+	r31:decomposition(Content,[Active])<0>
+	r32: implies(Datatransfer,Https)
+	r33: mutex(Ms, Https)
+	r34: implies(File,Ftp)
+	r35: implies(Db,Database)
+	r36: implies(Keywordsupport,Text)
+	r37: implies(Dynamic,Active)

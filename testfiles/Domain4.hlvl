@@ -1,0 +1,21 @@
+model  Domain4
+elements: 
+	boolean Beverages
+	boolean Dispenser
+	boolean Soups
+	boolean Tomato
+	boolean Tea
+	boolean HotChocolate
+	boolean HotWater
+	boolean Chicken
+	boolean root
+relations:
+	r0:group(Soups,[Tomato, Chicken])[1,*]
+	r1:group(Dispenser,[Beverages, Soups])[1,1]
+	r2: coreElements(root)
+	r3:decomposition(Tea,[Beverages])<1>
+	r4:decomposition(Beverages,[HotChocolate])<0>
+	r5:decomposition(Beverages,[HotWater])<0>
+	r6:decomposition(Dispenser,[root])<1>
+	r7: implies(Soups,HotWater)
+	r8: implies(Tea,HotWater)

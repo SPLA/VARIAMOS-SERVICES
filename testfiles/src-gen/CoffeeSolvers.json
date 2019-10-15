@@ -1,0 +1,36 @@
+{
+	"CSPSolver": [
+		{
+			"solverId": "Gecode",
+			"cmd": "Gecode",
+            "maxSolutions": 10,
+            "maxTime":10000,
+            "allInfo": "-v",
+            "allSolutions" : "-a",
+            "boundSolutions" : "-n",
+            "timeLimit": "--time-limit"
+		}
+	],
+	"SATSolver": [
+		{
+			"solverId":"picat",
+			"cmd": "picat_sat_cmd_line", 
+            "maxSolutions": 10,
+            "maxTime":10000,
+            "allInfo": "-v",
+            "allSolutions" : "-a",
+            "boundSolutions" : "-n",
+            "timeLimit": "--time-limit"
+		},
+		{
+			"solverId": "Gecode",
+			"cmd": "Gecode",
+            "maxSolutions": 10,
+            "maxTime":10000,
+            "allInfo": "-v",
+            "allSolutions" : "-a",
+            "boundSolutions" : "-n",
+            "timeLimit": "--time-limit"
+		}
+	]
+}
