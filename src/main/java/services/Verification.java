@@ -71,7 +71,7 @@ public class Verification {
 
 		File currentFileDir = verifyDirectory(project_direction+"testfiles\\");
 		
-		parsehlvl(data_string, name, currentFileDir);
+		parsehlvl(data_string, name, currentFileDir, param);
 		
 		//MCS
 		int length = 0;
@@ -108,7 +108,7 @@ public class Verification {
 
 		File currentFileDir = verifyDirectory(project_direction+"testfiles\\");
 		
-		parsehlvl(data_string, name, currentFileDir);
+		parsehlvl(data_string, name, currentFileDir, param);
 		
 		//MCS
 		int length = 0;
@@ -143,22 +143,6 @@ public class Verification {
 			}
 	    }
 		System.out.println("Configuration: " + param.toString());
-		String frontEndData = "{\n";
-		frontEndData += "\"solverSelected\" : \""+Solver_selected+"\",\n";
-		frontEndData += "\"problemType\" : \""+"BOOL"+"\",\n";
-		frontEndData += "\"configuration\" : \n"+ param.toString() +"\n";
-		frontEndData += "}";
-		
-		File currentModelFile2 = new File(currentFileDir.getAbsolutePath()+ "\\src-gen\\" +Frontend_config+".json");
-		//System.out.println(currentModelFile.getAbsolutePath());
-		BufferedWriter bw2;
-		try {
-			bw2 = new BufferedWriter(new FileWriter(currentModelFile2));
-			bw2.write(frontEndData);
-			bw2.close();	
-		} catch (IOException e) {
-			e.printStackTrace();
-		}	
 		
 		CompilationParameters params;
 		Compiler compiler= new Compiler();
@@ -198,7 +182,7 @@ public class Verification {
 		if(!fileDir.exists()) fileDir.mkdir();
 		return fileDir;
 	}
-	private void parsehlvl(String data_string, String name, File currentFileDir) {
+	private void parsehlvl(String data_string, String name, File currentFileDir, JsonObject param) {
 		hlvl_parser = new VariamosXMLToHlvlParser();
 		String result = "";
 		//System.out.println("Data:");
@@ -285,6 +269,23 @@ public class Verification {
 			bw3 = new BufferedWriter(new FileWriter(currentModelFile3));
 			bw3.write(coffeesolver);
 			bw3.close();	
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
+		
+		String frontEndData = "{\n";
+		frontEndData += "\"solverSelected\" : \""+Solver_selected+"\",\n";
+		frontEndData += "\"problemType\" : \""+"BASIC_BOOL"+"\",\n";
+		frontEndData += "\"configuration\" : \n"+ param.toString() +"\n";
+		frontEndData += "}";
+		
+		File currentModelFile2 = new File(currentFileDir.getAbsolutePath()+ "\\src-gen\\" +Frontend_config+".json");
+		//System.out.println(currentModelFile.getAbsolutePath());
+		BufferedWriter bw2;
+		try {
+			bw2 = new BufferedWriter(new FileWriter(currentModelFile2));
+			bw2.write(frontEndData);
+			bw2.close();	
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
