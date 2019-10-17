@@ -13,7 +13,7 @@ var bool : root ;
 % Variables and constraints from the variability relations definition
 constraint Soups <-> ( Tomato \/ Chicken ) ;
 constraint Dispenser <-> ( Beverages \/ Soups ) ;
-constraint root = true ;
+constraint root == true ;
 constraint Tea <-> Beverages ;
 constraint HotChocolate -> Beverages ;
 constraint HotWater -> Beverages ;

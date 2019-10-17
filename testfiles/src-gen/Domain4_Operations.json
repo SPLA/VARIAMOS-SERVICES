@@ -1,4 +1,4 @@
 {
- "problemType" : "BOOL",
- "parsingTime"  : 18
+ "problemType" : "BASIC_BOOL",
+ "parsingTime"  : "145ms"
 		}

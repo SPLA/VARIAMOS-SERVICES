@@ -18,13 +18,14 @@ public interface IHlvlParser {
 	public String getValidName(String name);
 	
 	/**
-	 * Method 
+	 * Method to do the parsing of a xml file to Hlvl
 	 * @throws Exception
 	 */
 	public void parse() throws Exception;
 	
 	/**
-	 * Method 
+	 * Method to do the parsing of a xml file to Hlvl
+	 * @param data: String that represents the content of a xml file
 	 * @throws Exception: 
 	 */
 	public String parse(String data, String name)throws Exception;

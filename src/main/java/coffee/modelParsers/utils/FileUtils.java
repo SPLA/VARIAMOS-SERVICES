@@ -9,10 +9,10 @@ import java.util.List;
 
 public class FileUtils {
 	/**
-	 * Lee la lista de archivos de un directorio
+	 * Reads the files from a directory to create a list of File objects
 	 * 
-	 * @param directoryPath
-	 * @return
+	 * @param directoryPath: path from the directory where the files are
+	 * @return List of File objects that represents the files of the directory
 	 */
 	public static List<File> readFileFromDirectory(String directoryPath) {
 		File Dir = new File(directoryPath);
@@ -31,9 +31,10 @@ public class FileUtils {
 	}
 
 	/**
-	 * Recibe una cadena y la escribe en un archivo de extension hlvl
+	 * Creates a Hlvl code file at the location given which content is the string given
 	 * 
-	 * @param program
+	 * @param program: String that contains the Hlvl code
+	 * @param path: location where the Hlvl code file should be created
 	 */
 	public static void writeHLVLProgram(String path, String program) {
 		try {
@@ -46,7 +47,7 @@ public class FileUtils {
 			bw.close();
 			fw.close();
 		} catch (java.io.IOException ioex) {
-			System.out.println("se presento el error: " + ioex.toString());
+			System.out.println("Error ocurred: " + ioex.toString());
 		}
 	}
 }

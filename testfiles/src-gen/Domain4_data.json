@@ -1,1 +1,1 @@
-{"Dispenser":true,"Beverages":true,"Soups":false,"Tea":true,"HotChocolate":false,"HotWater":true,"Tomato":false,"Chicken":false,"root":true}
+{"Dispenser":false,"Beverages":false,"Soups":false,"Tea":false,"HotChocolate":false,"HotWater":false,"Tomato":false,"Chicken":false,"root":false}

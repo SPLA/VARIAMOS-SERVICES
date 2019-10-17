@@ -26,39 +26,40 @@ import coffee.modelParsers.utils.FileUtils;
  * 
  * @version 0.5, 19/01/2019
  * @author Joan David Colina Echeverry
+ * contracts modified on September 15th by Juan Diego Carvajal Castaño
  */
 public class XmlReader {
 	
 	/**
-	 * @param ArrayList<Dependecy>: ArrayList with Dependecy objects
+	 * @param ArrayList<Dependecy>: ArrayList with Dependency objects
 	 */
-	private ArrayList<Dependecy> importantXmlDependecy;
+	private ArrayList<Dependency> xmlDependecies;
 	/**
-	 * @param HashMap<String, Element>: HashMap with Dependecy objects
+	 * @param HashMap<String, Element>: HashMap with Element objects
 	 */
 
 	private HashMap<String, Element> xmlElements;
 
 	/**
-	 * this method return a list of Dependecy objects
+	 * This method return a list of Dependency objects
 	 * 
-	 * @return ArrayList: ArrayList with Dependecy objects
+	 * @return ArrayList: ArrayList with Dependency objects
 	 */
-	public ArrayList<Dependecy> getImportantXmlDependecy() {
-		return importantXmlDependecy;
+	public ArrayList<Dependency> getImportantXmlDependecy() {
+		return xmlDependecies;
 	}
 
 	/**
-	 * this method change importantXMLDependecy's value for paramater.
+	 * This method change importantXMLDependecies's value for parameter.
 	 * 
-	 * @param importantXmlDependecy: ArrayList with Dependecy objects
+	 * @param importantXmlDependecy: ArrayList with Dependency objects
 	 */
-	public void setImportantXmlDependecy(ArrayList<Dependecy> importantXmlDependecy) {
-		this.importantXmlDependecy = importantXmlDependecy;
+	public void setImportantXmlDependecy(ArrayList<Dependency> importantXmlDependecy) {
+		this.xmlDependecies = importantXmlDependecy;
 	}
 
 	/**
-	 * this method return a list of Element objects
+	 * This method return a list of Element objects
 	 * 
 	 * @return HashMap: HashMap with Element objects
 	 */
@@ -68,7 +69,7 @@ public class XmlReader {
 	}
 
 	/**
-	 * this method change importantXMLElement' value for paramater.
+	 * This method changes importantXMLElement' value for parameter.
 	 * 
 	 * @param xmlElements: HashMap with Element objects
 	 */
@@ -78,23 +79,23 @@ public class XmlReader {
 	}
 
 	/**
-	 * this method is responsible for inicializate importantXmlDependecy and
-	 * importantXMLElement Arrays. and this methos have to create a DocumentBuilder
-	 * to load the XML file. to then, read that fiel and load into Dependecy and
+	 * This method is responsible for initialize xmlDependecy and
+	 * xmlElement Arrays, creating a DocumentBuilder
+	 * to load a XML file, read that file and load it into Dependency and
 	 * Element objects.
 	 * 
-	 * @param path: string that represent the XML source to load.
+	 * @param path: location to the XML file to load.
 	 */
 
-	public void loadXmlFiel(String path) {
-		importantXmlDependecy = new ArrayList<Dependecy>();
+	public void loadXmlFile(String path) {
+		xmlDependecies = new ArrayList<Dependency>();
 		xmlElements = new HashMap<String, Element>();
-		List<File> xmlFiel = FileUtils.readFileFromDirectory(path);
+		List<File> xmlFile = FileUtils.readFileFromDirectory(path);
 
 		try {
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			for (int i = 0; i < xmlFiel.size(); i++) {
-				org.w3c.dom.Document xmlTree = builder.parse(xmlFiel.get(i));
+			for (int i = 0; i < xmlFile.size(); i++) {
+				org.w3c.dom.Document xmlTree = builder.parse(xmlFile.get(i));
 				readDocument(xmlTree);
 			}
 		} catch (Exception e) {
@@ -103,8 +104,16 @@ public class XmlReader {
 
 	}
 
+	/**
+	 * This method is responsible for initialize xmlDependecies and
+	 * xmlElements Arrays, creating a DocumentBuilder to
+	 * read a String that represents the content of a xml file,
+	 * and load it into Dependency and Element objects.
+	 * 
+	 * @param xml:String that represents the content of a xml file
+	 */
 	public void loadXmlString(String xml) {
-		importantXmlDependecy = new ArrayList<Dependecy>();
+		xmlDependecies = new ArrayList<Dependency>();
 		xmlElements = new HashMap<String, Element>();
 	
 		try {
@@ -117,11 +126,11 @@ public class XmlReader {
 		
 	}
 	/**
-	 * this method is responsible for create and add to importarXmlElement a Element
-	 * object with type equal to General or Root. to create this objet is necesary a
+	 * This method is responsible for creating and adding to xmlElements an Element
+	 * object with type equal to General or Root. To create this object is necessary a
 	 * name, id and type.
 	 * 
-	 * @param n: node from XML tree
+	 * @param n: node from XML tree from the loadXmlFile or loadXmlString method
 	 */
 	public void addGeneralAndRootElement(Node n) {
 
@@ -143,11 +152,11 @@ public class XmlReader {
 	}
 
 	/**
-	 * this method is responsible for create and add to importarXmlElement a Element
-	 * object with type equal to Leaf. to create this objet is necesary a name, id,
+	 * This method is responsible for creating and adding to xmlElement an Element
+	 * object with type equal to Leaf. To create this object is necessary a name, id,
 	 * type and select.
 	 * 
-	 * @param n: node from XML tree
+	 * @param n: node from XML tree from the loadXmlFile or loadXmlString method
 	 */
 	public void addLeafElement(Node n) {
 		Element xmlElement = new Element();
@@ -171,11 +180,11 @@ public class XmlReader {
 	}
 
 	/**
-	 * this method is responsible for create and add to importarXmlElement a Element
-	 * object with type equal to bundle. to create this objet is necesary a name,
+	 * This method is responsible for creating and adding to xmlElement a Element
+	 * object with type equal to bundle. to create this object is necessary a name,
 	 * id, type and bundleType.
 	 * 
-	 * @param n: node from XML tree
+	 * @param n: node from XML tree from the loadXmlFile or loadXmlString method
 	 */
 	public void addBundleElement(Node n) {
 		Element xmlElement = new Element();
@@ -202,14 +211,14 @@ public class XmlReader {
 	}
 
 	/**
-	 * this method is responsible for check if importarXmlDependecy contain a
-	 * Dependecy wiht the same id
+	 * This method is responsible for checking if xmlDependencies contains a
+	 * Dependency with the same id given
 	 * 
-	 * @param String: Dependecy's id
+	 * @param String: Dependency's id
 	 */
 	private boolean exitsDependecy(String id) {
-		for (int i = 0; i < importantXmlDependecy.size(); i++) {
-			if (id.equals(importantXmlDependecy.get(i).id)) {
+		for (int i = 0; i < xmlDependecies.size(); i++) {
+			if (id.equals(xmlDependecies.get(i).id)) {
 				return true;
 			}
 		}
@@ -217,13 +226,13 @@ public class XmlReader {
 	}
 
 	/**
-	 * this method is responsible for create and add to importarXmlDependecy a
-	 * Dependecy object with type
+	 * This method is responsible for creating and adding to xmlDependencies a
+	 * Dependency object with type
 	 * 
-	 * @param n: node from XML tree
+	 * @param n: node from XML tree from the loadXmlFile or loadXmlString method
 	 */
 	public void addDependecy(Node n) {
-		Dependecy newDependecy = new Dependecy();
+		Dependency newDependecy = new Dependency();
 
 		newDependecy.setId(n.getAttributes().item(0).getNodeValue());
 
@@ -238,13 +247,14 @@ public class XmlReader {
 		AddAtributesFromChildren(n, newDependecy);
 
 		if (!exitsDependecy(n.getAttributes().item(0).getNodeValue()))
-			importantXmlDependecy.add(newDependecy);
+			xmlDependecies.add(newDependecy);
 
 	}
 
 	/**
-	 * this method is responsible for travel whole XML tree and call methos to
-	 * create Element or Dependecy object.
+	 * This method is responsible for traveling a whole XML tree and call methods to
+	 * create and add the correct type of Element or Dependency object to the
+	 * xmlDependencies or xmlElements attributes.
 	 * 
 	 * @param n: node from XML tree
 	 */
@@ -269,13 +279,13 @@ public class XmlReader {
 	}
 
 	/**
-	 * this method is responsible for travel the node's children and add source and
-	 * target parameter to Dependecy object.
+	 * This method is responsible for traveling the node's children and add source and
+	 * target parameters to Dependencies objects.
 	 * 
 	 * @param n: node from XML tree
-	 * @param newDependecy: Dependecy that need source and target parameter
+	 * @param newDependecy: Dependency that need source and target parameters
 	 */
-	public void AddAtributesFromChildren(Node n, Dependecy newDependecy) {
+	public void AddAtributesFromChildren(Node n, Dependency newDependecy) {
 		NodeList childrens = n.getChildNodes();
 		for (int i = 0; i < childrens.getLength(); i++) {
 			Node newNode = childrens.item(i);

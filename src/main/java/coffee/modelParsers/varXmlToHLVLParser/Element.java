@@ -1,7 +1,7 @@
 package coffee.modelParsers.varXmlToHLVLParser;
 
 /**
-* this class repesent a root, general and leaf element from the XML tree
+* This class repesent a root, general or leaf element from a XML tree
 * 
 * @author Joan David Colina Echeverry
 * modified on 25th January by avillota

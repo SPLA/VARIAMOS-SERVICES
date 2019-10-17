@@ -1,22 +1,28 @@
 package coffee.modelParsers.utils;
 
 /**
- * Parameters for the splot to HLVL parameters
+ * Parameters for the varXml to HLVL parameters.
  * @author Angela Villota
  * Modified by Juan Reyes - 2019-02-15
  * January 2019
+ * contracts modified on September 15th by Juan Diego Carvajal Castaño
  */
 
 public class ParsingParameters {
 	private static final String HLVL_EXT=".hlvl";
-	private String inputPath;
-	private String outputPath;
-	private String targetName;
-	
-
-	/*
-	 *  Getters and Setters
+	/**
+	 * Path to the xml file that contains the model to parse
 	 */
+	private String inputPath;
+	/**
+	 * Path where the parsed xml (Hlvl code) file should be created
+	 */
+	private String outputPath;
+	/**
+	 * File name for the parsed xml (Hlvl code)
+	 */
+	private String targetName;
+
 	/**
 	 * @return the outputPath
 	 */
@@ -41,10 +47,15 @@ public class ParsingParameters {
 	public void setInputPath(String inputPath) {
 		this.inputPath = inputPath;
 	}
-	
+	/**
+	 * @return the targetName
+	 */
 	public String getTargetName() {
 		return targetName;
 	}
+	/**
+	 * @param targetName the targetName to set
+	 */
 	public void setTargetName(String targetName) {
 		this.targetName = targetName;
 	}

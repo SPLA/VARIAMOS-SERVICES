@@ -67,7 +67,6 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}\src\main\webapp\WEB-INF\lib\common.jar</systemPath>
 		</dependency>
-		
   </dependencies>
   <build>
     <finalName>VariaMosServices</finalName>

@@ -20,16 +20,25 @@ import coffee.modelParsers.utils.ParsingParameters;
  * 
  * @version 0.5, 19/01/2019
  * @author Joan David Colina Echeverry
+ * contracts modified on September 15th by Juan Diego Carvajal Castaño
+ * bugs fixed by avillota on octobre 16th 2019
  */
 public class VariamosXMLToHlvlParser implements IHlvlParser {
+	
+	/**
+	 * tabulation 
+	 */
+	private static final String TAB ="\t"; 
 
 	/**
+	 * List that contains the dependencies between the elements from a xml file
 	 * @param ArrayList<Dependecy>: ArrayList with Dependecy objects
 	 */
-	private ArrayList<Dependecy> importantXmlDependecy;
+	private ArrayList<Dependency> importantXmlDependecy;
 
 	/**
-	 * @param HashMap<String, Element>: HashMapwith Element objects
+	 * Map that contains the elements from a xml. These elements can be: root, general and leaf
+	 * @param HashMap<String, Element>: HashMap with Element objects
 	 */
 	private HashMap<String, Element> xmlElements;
 
@@ -42,7 +51,7 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 	/**
 	 * @param params: relationship with the ParsingParameters class that fulfills
 	 *        the function of save the pahts to load de xml fiel and write de HLVL
-	 *        code fiel
+	 *        code file
 	 */
 	private ParsingParameters params;
 
@@ -53,16 +62,16 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 	private StringBuilder HlvlCode;
 	/**
 	 * @param converter: relationship with the HlvlBasicFactory class that fulfills
-	 *        the function of create HLVL code
+	 *        the function of creating the HLVL code
 	 */
-	private IHlvlBasicFactory converter;
+	private IHlvlBasicFactory rules;
 
 	/**
-	 * this method is responsible for create a VariamosXMLToHlvlParser objet and
-	 * inicializate HlvlCode parameter.
+	 * This method is responsible for creating a VariamosXMLToHlvlParser object and
+	 * inicializate HlvlCode and params attributes.
 	 * 
-	 * @param params: params that contain paths necesary to load xml fiel
-	 *        and save HLVL fiel.
+	 * @param params: params that contain paths necesary to load xml file
+	 *        and save HLVL file.
 	 */
 	public VariamosXMLToHlvlParser(ParsingParameters params) {
 		HlvlCode = new StringBuilder();
@@ -70,7 +79,8 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 	}
 	
 	/**
-	 * this method is responsible for create a VariamosXMLToHlvlParser objet
+	 * This method is responsible for creating a VariamosXMLToHlvlParser object and
+	 * inicializate the HlvlCode attribute
 	 * 
 	 */
 	public VariamosXMLToHlvlParser() {
@@ -78,7 +88,7 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 	}
 
 	/**
-	 * this method is responsible for create a HLVL code's fiel .hlvl
+	 * This method is responsible for creating a HLVL code's file
 	 */
 	public void writeFile() {
 		FileUtils.writeHLVLProgram(params.getOutputPath(), HlvlCode.toString());
@@ -86,21 +96,28 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 	}
 
 	/**
-	 * this method is responsible for load the XML fiel and inicializate the
-	 * ArrayList
+	 * This method is responsible for load the XML file and inicializate the
+	 * importantXmlDependency and xmlElements arraylists using an xml file whose
+	 * location path is configured in the params attribute
+	 * <pre>params != null and params.inputPath != null and params.outputPath != null and params.targetName != null</pre>
 	 */
 	public void loadArrayLists() {
 		xmlReader = new XmlReader();
-		converter = new HlvlBasicFactory();
-		xmlReader.loadXmlFiel(params.getInputPath());
+		rules = new HlvlBasicFactory();
+		xmlReader.loadXmlFile(params.getInputPath());
 		importantXmlDependecy = xmlReader.getImportantXmlDependecy();
 		xmlElements = xmlReader.getXmlElements();
 
 	}
-	
+	/**
+	 * This method is responsible for load the XML file and inicializate the
+	 * importantXmlDependency and xmlElements arraylists using a string that
+	 * represents the content of a xml file
+	 * @param xml: string that represents the content of a xml file
+	 */
 	public void loadArrayLists(String xml) {
 		xmlReader = new XmlReader();
-		converter = new HlvlBasicFactory();
+		rules = new HlvlBasicFactory();
 		xmlReader.loadXmlString(xml);
 		importantXmlDependecy = xmlReader.getImportantXmlDependecy();
 		xmlElements = xmlReader.getXmlElements();
@@ -108,11 +125,11 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 	}
 
 	/**
-	 * this method is responsible for create descomposition, implies and mutex HLVL
-	 * code
+	 * This method is responsible for creating descomposition, implies and mutex (mutual exclusion)
+	 * relations in HLVL code from the importantXmlDependency attribute
 	 */
 	public void converterXmlDependecyToHLVLCode() {
-		HlvlCode.append(converter.getRelationsLab());
+		HlvlCode.append(rules.getRelationsLab());
 		converterGroupAndCore();
 		for (int i = 0; i < importantXmlDependecy.size(); i++) {
 
@@ -121,16 +138,16 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 			String caso = importantXmlDependecy.get(i).getRelType();
 			switch (caso) {
 			case "mandatory":
-				HlvlCode.append("	" + converter.getDecomposition(source, target, DecompositionType.Mandatory));
+				HlvlCode.append(TAB + rules.getDecomposition(source, target, DecompositionType.Mandatory));
 				break;
 			case "optional":
-				HlvlCode.append("	" + converter.getDecomposition(target, source, DecompositionType.Optional));
+				HlvlCode.append(TAB + rules.getDecomposition(target, source, DecompositionType.Optional));
 				break;
 			case "requires":
-				HlvlCode.append("	" + converter.getImplies(source, target));
+				HlvlCode.append(TAB + rules.getImplies(source, target));
 				break;
 			case "excludes":
-				HlvlCode.append("	" + converter.getMutex(target, source));
+				HlvlCode.append(TAB + rules.getMutex(target, source));
 				break;
 
 			}
@@ -138,7 +155,7 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 	}
 
 	/**
-	 * this method is responsible for search into the ArrayList the XML
+	 * This method is responsible for searching in xmlElements attribute the XML
 	 * Element's name having the XML Element's id
 	 * 
 	 * @param id: string that represent the XML Element's id.
@@ -149,21 +166,23 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 	}
 
 	/**
-	 * this method is responsible for create boolean HLVL code
+	 * This method is responsible for creating the declaration for a boolean
+	 * element in HLVL and adding it to the HlvlCode attribute
 	 */
 	public void converterXmlElementToHLVLCode() {
 
 		for (Entry<String, Element> entry : xmlElements.entrySet()) {
 			String name = getValidName(entry.getValue().getName());
 			if (!name.equals("bundle")) {
-				HlvlCode.append("	" + converter.getElement(name));
+				HlvlCode.append(TAB + rules.getElement(name));
 			}
 		}
 
 	}
 
 	/**
-	 * this method is responsible for create coreElements and group HLVL code
+	 * This method is responsible for creating coreElements and group relations in HLVL and
+	 * adding them to the HlvlCode attribute
 	 */
 	public void converterGroupAndCore() {
 
@@ -172,16 +191,14 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 			String caso = entry.getValue().getType();
 			switch (caso) {
 			case "root":
-				HlvlCode.append("	" + converter.getCore(name));
+				HlvlCode.append(TAB + rules.getCommon(name));
 				break;
 			case "bundle":
 				if (entry.getValue().getBundleType().endsWith("XOR"))
-				{
-					HlvlCode.append("	" + converter.getGroup(findRootBundle(entry.getValue()),
+					HlvlCode.append(TAB + rules.getGroup(findRootBundle(entry.getValue()),
 							findGroupsElements(entry.getValue()), GroupType.Xor));
-				}
 				else
-					HlvlCode.append("	" + converter.getGroup(findRootBundle(entry.getValue()),
+					HlvlCode.append(TAB + rules.getGroup(findRootBundle(entry.getValue()),
 							findGroupsElements(entry.getValue()), GroupType.Or));
 				break;
 			}
@@ -189,15 +206,15 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 	}
 
 	/**
-	 * this method is responsible for searh into the ArrayList the element
-	 * that groups the other elements
+	 * This method is responsible for searching into the xmlElements attribute to find
+	 * the root element from a bundle element
 	 * 
-	 * @param element: Element that represent a XML bundle.
-	 * @return Strign that represent the XML Element's name.
+	 * @param bundle: Element that represent a XML bundle.
+	 * @return String that represent the XML Element's name that is root to the given bundle.
 	 */
-	public String findRootBundle(Element element) {
+	public String findRootBundle(Element bundle) {
 		String name = "";
-		String id = element.getId();
+		String id = bundle.getId();
 		for (int i = 0; i < importantXmlDependecy.size(); i++) {
 			if (id.equals(importantXmlDependecy.get(i).getSource())) {
 				name = searchForName(importantXmlDependecy.get(i).getTarget());
@@ -209,16 +226,16 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 	}
 
 	/**
-	 * this method is responsible for searh into the ArrayList all elements
-	 * grouped by the element bundel
+	 * This method is responsible for searching into the xmlElements attribute the
+	 * elements which are grouped by a bundle element
 	 * 
-	 * @param element: Element that represent a XML bundle.
-	 * @return ArrayList that contain name of all XML Element.
+	 * @param bundle: Element that represent a XML bundle.
+	 * @return ArrayList that contains the names of all elements grouped by the bundle given
 	 */
-	public ArrayList<String> findGroupsElements(Element element) {
+	public ArrayList<String> findGroupsElements(Element bundle) {
 
 		ArrayList<String> result = new ArrayList<String>();
-		String id = element.getId();
+		String id = bundle.getId();
 		for (int i = 0; i < importantXmlDependecy.size(); i++) {
 			if (id.equals(importantXmlDependecy.get(i).getTarget())) {
 				String name = getValidName(searchForName(importantXmlDependecy.get(i).getSource()));
@@ -229,10 +246,10 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 	}
 
 	/**
-	 * this method is responsible for ensure the format of the item name
+	 * This method is responsible for ensure the correct format of an item name
 	 * 
-	 * @param name: name of any Element.
-	 * @return String: name in valid format
+	 * @param name: name of an Element.
+	 * @return String: name in the valid format
 	 */
 	@Override
 	public String getValidName(String name) {
@@ -241,13 +258,13 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 	}
 
 	/**
-	 * this method is responsible create de HLVL code and to persist the HLVL code
-	 * 
+	 * This method is responsible creating the HLVL code from a xml file and to persist the HLVL code 
+	 * <pre>params != null and params.inputPath != null and params.outputPath != null and params.targetName != null</pre>
 	 */
 	@Override
 	public void parse() throws Exception {
 		loadArrayLists();
-		HlvlCode.append(converter.getHeader(params.getTargetName()+"_generated"));
+		HlvlCode.append(rules.getHeader(params.getTargetName()+"_generated"));
 		converterXmlElementToHLVLCode();
 		converterXmlDependecyToHLVLCode();
 		writeFile();
@@ -256,7 +273,8 @@ public class VariamosXMLToHlvlParser implements IHlvlParser {
 	@Override
 	public String parse(String data, String name) throws Exception {
 		loadArrayLists(data);
-		HlvlCode.append(converter.getHeader(name));
+		//FIXME consider to include a timestamp in the id of the model 
+		HlvlCode.append(rules.getHeader(name));
 		converterXmlElementToHLVLCode();
 		converterXmlDependecyToHLVLCode();
 		return  HlvlCode.toString();

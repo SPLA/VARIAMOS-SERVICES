@@ -1,16 +1,12 @@
 package services;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
@@ -22,15 +18,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import commandExecutor.CmdExecutor;
 import com.coffee.compiler.CompilationParameters;
 import com.coffee.compiler.Compiler;
+import com.coffee.compiler.CompilerAnswer;
 import com.coffee.compiler.SourceOfCompilation;
-import coffee.modelParsers.varXmlToHLVLParser.VariamosXMLToHlvlParser;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import coffee.modelParsers.varXmlToHLVLParser.VariamosXMLToHlvlParser;
+import commandExecutor.CmdExecutor;
 
 @Controller
 public class Verification {
@@ -165,14 +162,14 @@ public class Verification {
 			e.printStackTrace();
 		}
 		
-		javax.json.JsonObject solution = null;
+		CompilerAnswer solution = null;
 		try {
-			solution = compiler.getNSolutions(1);
+			solution = compiler.getSolutions(1);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println(solution.get("state").toString());
-		if(solution.get("state").toString().contains("UNSATISFIABLE"))
+		System.out.println(solution.getState());
+		if(solution.getState().contains("UNSATISFIABLE"))
 			return false;
 		return true;
 	}
@@ -225,7 +222,7 @@ public class Verification {
 		}
 		
 		String coffeesolver = "{\r\n" + 
-				"	\"CSPSolver\": [\r\n" + 
+				"\"CSPSolver\": [\r\n" + 
 				"		{\r\n" + 
 				"			\"solverId\": \"Gecode\",\r\n" + 
 				"			\"cmd\": \"Gecode\",\r\n" + 
@@ -240,17 +237,7 @@ public class Verification {
 				"	\"SATSolver\": [\r\n" + 
 				"		{\r\n" + 
 				"			\"solverId\":\"picat\",\r\n" + 
-				"			\"cmd\": \"picat_sat_cmd_line\", \r\n" + 
-				"            \"maxSolutions\": 10,\r\n" + 
-				"            \"maxTime\":10000,\r\n" + 
-				"            \"allInfo\": \"-v\",\r\n" + 
-				"            \"allSolutions\" : \"-a\",\r\n" + 
-				"            \"boundSolutions\" : \"-n\",\r\n" + 
-				"            \"timeLimit\": \"--time-limit\"\r\n" + 
-				"		},\r\n" + 
-				"		{\r\n" + 
-				"			\"solverId\": \"Gecode\",\r\n" + 
-				"			\"cmd\": \"Gecode\",\r\n" + 
+				"			\"cmd\": \"Gecode\", \r\n" + 
 				"            \"maxSolutions\": 10,\r\n" + 
 				"            \"maxTime\":10000,\r\n" + 
 				"            \"allInfo\": \"-v\",\r\n" + 
@@ -258,9 +245,9 @@ public class Verification {
 				"            \"boundSolutions\" : \"-n\",\r\n" + 
 				"            \"timeLimit\": \"--time-limit\"\r\n" + 
 				"		}\r\n" + 
-				"	]\r\n" + 
-				"}\r\n" + 
-				"";
+				"\r\n" + 
+				"	]" +
+				"}\r\n";
 		
 		File currentModelFile3 = new File(currentFileDir.getAbsolutePath()+ "\\src-gen\\" +Solver_config+".json");
 		//System.out.println(currentModelFile.getAbsolutePath());
@@ -273,9 +260,10 @@ public class Verification {
 			e.printStackTrace();
 		}	
 		
-		String frontEndData = "{\n";
-		frontEndData += "\"solverSelected\" : \""+Solver_selected+"\",\n";
-		frontEndData += "\"problemType\" : \""+"BASIC_BOOL"+"\",\n";
+		String frontEndData = 
+				"{\n";
+		frontEndData += "\"solverSelected\" : \""+"\",\n";
+		frontEndData += "\"problemType\" : \""+"BAISC_BOOL"+"\",\n";
 		frontEndData += "\"configuration\" : \n"+ param.toString() +"\n";
 		frontEndData += "}";
 		

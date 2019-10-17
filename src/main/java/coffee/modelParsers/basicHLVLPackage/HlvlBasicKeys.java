@@ -6,13 +6,17 @@ package coffee.modelParsers.basicHLVLPackage;
  * @author Angela Villota
  * Coffee V1
  * January 2019
+ * october 2019, updated by avillota introducing the changes in the syntax of HLVL
  */
 
 public interface HlvlBasicKeys {
 	/**
 	 * Hlvl Constructs for the dialect HLVL(basic)
 	 */
-	public static String CORE ="coreElements";
+	
+
+	// change introduced by avillota
+	public static String COMMON ="common";
 	public static String MUTEX ="mutex";
 	public static String IMPLIES ="implies";
 	public static String DECOMPOSITION ="decomposition";
@@ -27,8 +31,9 @@ public interface HlvlBasicKeys {
 	/**
 	 * Cardinalities for decomposition and group constructs 
 	 */
-	 public static String MANDATORY ="<1>";
-	 public static String OPTIONAL ="<0>";
+	 //FIXME fixing the representation of decomposition cardinalities
+	 public static String MANDATORY ="[1,1]";
+	 public static String OPTIONAL ="[0,1]";
 	 public static String ALTERNATIVE ="[1,1]";
 	 public static String OR ="[1,*]";
 	 
