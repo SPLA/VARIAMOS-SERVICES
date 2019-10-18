@@ -67,6 +67,13 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}\src\main\webapp\WEB-INF\lib\common.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>javax.json</groupId>
+			<artifactId>json</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}\src\main\webapp\WEB-INF\lib\javax.json.jar</systemPath>
+		</dependency>
   </dependencies>
   <build>
     <finalName>VariaMosServices</finalName>

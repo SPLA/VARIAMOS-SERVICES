@@ -2,6 +2,7 @@ package services;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObjectBuilder;
 
 import org.springframework.stereotype.Controller;
@@ -70,19 +72,11 @@ public class Verification {
 		
 		parsehlvl(data_string, name, currentFileDir, param);
 		
-		//MCS
-		int length = 0;
-		List<String> temparray = new ArrayList<String>();
-		for (String keyStr : param.keySet()) {
-	        temparray.add(keyStr);
-	        length++;
-	    }
-		boolean voidfalseresult = checksubsets(length, temparray, param, currentFileDir, name);
-		
+		JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+		objectBuilder.add("root", true);
+		javax.json.JsonObject selections = objectBuilder.build();
 		String returnmessage = "";
-//		JsonObjectBuilder objectBuilder = Json.createObjectBuilder().add("solution", getsolverresult(param, currentFileDir, name)).add("hlvl", "HLVL:\n"+result);
-//		javax.json.JsonObject response_result = objectBuilder.build();
-		if(voidfalseresult)
+		if(getsolverresult(selections, currentFileDir, name))
 			returnmessage = "There is at least one solution.";
 		else
 			returnmessage = "There is no solution.";
@@ -107,39 +101,137 @@ public class Verification {
 		
 		parsehlvl(data_string, name, currentFileDir, param);
 		
-		//MCS
-		int length = 0;
 		List<String> temparray = new ArrayList<String>();
 		for (String keyStr : param.keySet()) {
-	        temparray.add(keyStr);
-	        length++;
+			JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+			objectBuilder.add(keyStr, true);
+			javax.json.JsonObject selections = objectBuilder.build();
+			if(!getsolverresult(selections, currentFileDir, name))
+				temparray.add(keyStr);
 	    }
-		List<String> voidfalseresult = checkdeadsubsets(length, temparray, param, currentFileDir, name);
-		if(voidfalseresult.size() == 0)
-			return null;
-		JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
-		for(int i = 0; i < voidfalseresult.size(); i++)
+		
+		JsonObjectBuilder Builder = Json.createObjectBuilder();
+		for(int i = 0; i < temparray.size(); i++)
 		{
-			objectBuilder.add("" + i, voidfalseresult.get(i));
+			Builder.add("" + i, temparray.get(i));
 		}
-		javax.json.JsonObject response_result = objectBuilder.build();
+		javax.json.JsonObject response_result = Builder.build();
 		System.out.println(response_result.toString());
 		return response_result.toString();
 	}
 	
-	private boolean getsolverresult(JsonObject param, File currentFileDir, String name, String[] verification) {
-		List<String> list = Arrays.asList(verification);
-		for (String keyStr : param.keySet()) {
-			if(list.contains(keyStr))
-			{
-				param.addProperty(keyStr, true);
+	@CrossOrigin
+	@RequestMapping(value="/Verification/check_optional", method=RequestMethod.POST, produces="text/plain")
+	@ResponseBody
+	public String check_optional(@RequestBody String data_collected) {
+		JsonParser parser = new JsonParser();
+		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
+		JsonElement data = rootObj.get("data");
+		String name = rootObj.get("name").getAsString();
+		name = name.replaceAll("\\s","");
+		name = name.replaceAll("-","");
+		String data_string = data.getAsString();
+		JsonObject param = rootObj.get("param").getAsJsonObject();
+		JsonObject optionals = rootObj.get("optional").getAsJsonObject();
+
+		File currentFileDir = verifyDirectory(project_direction+"testfiles\\");
+		
+		parsehlvl(data_string, name, currentFileDir, param);
+		
+		List<String> temparray = new ArrayList<String>();
+		for (String keyStr : optionals.keySet()) {
+			System.out.println("False optional:" + keyStr);
+			
+			String frontEndData = 
+					"{\n";
+			frontEndData += "\"solverSelected\" : \""+"\",\n";
+			frontEndData += "\"problemType\" : \""+"BAISC_BOOL"+"\",\n";
+			frontEndData += "\"configuration\" : \n"+ "{\""+keyStr + "\""  + ":true}" +"\n";
+			frontEndData += "}";
+			
+			File currentModelFile2 = new File(currentFileDir.getAbsolutePath()+ "\\src-gen\\" +Frontend_config+".json");
+			BufferedWriter bw2;
+			try {
+				bw2 = new BufferedWriter(new FileWriter(currentModelFile2));
+				bw2.write(frontEndData);
+				bw2.close();	
+			} catch (IOException e) {
+				e.printStackTrace();
+			}	
+			
+			CompilationParameters params;
+			Compiler compiler= new Compiler();
+			try {
+				params = new CompilationParameters(
+						project_direction+"testfiles\\src-gen\\", //INPUT_FILES_PATH 
+						project_direction+"testfiles\\src-gen\\", //MZN_FILES_PATH 
+						project_direction+"testfiles\\", //OUTPUT_FILES_PATH
+						name,
+						Solver_config,
+						Frontend_config,
+						SourceOfCompilation.FILE
+						);
+				compiler.setUpCompilation(params);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			else
-			{
-				param.addProperty(keyStr, false);
+			
+			CompilerAnswer solution = null;
+			try {
+				solution = compiler.getSolutions(1);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			String[] parts = solution.getSolutions().iterator().next().toString().split("\n");
+			JsonObjectBuilder Builder = Json.createObjectBuilder();
+			for(int j = 1; j < parts.length-1; j++)
+			{
+				if(parts[j].split(", ")[1].contains("true") && !parts[j].split(", ")[0].contains(keyStr))
+				{
+					Builder.add(parts[j].split(", ")[0], true);
+				}
+				else
+				{
+					Builder.add(parts[j].split(", ")[0], false);
+				}
+			}
+			javax.json.JsonObject selections = Builder.build();
+			if(!getsolverresult(selections, currentFileDir, name))
+				temparray.add(keyStr);
 	    }
+		JsonObjectBuilder Builder = Json.createObjectBuilder();
+		for(int i = 0; i < temparray.size(); i++)
+		{
+			Builder.add("" + i, temparray.get(i));
+		}
+		javax.json.JsonObject response_result = Builder.build();
+		System.out.println(response_result.toString());
+		return response_result.toString();
+	}
+	
+	private boolean getsolverresult(javax.json.JsonObject param, File currentFileDir, String name) {
 		System.out.println("Configuration: " + param.toString());
+		
+		String frontEndData = 
+				"{\n";
+		frontEndData += "\"solverSelected\" : \""+"\",\n";
+		frontEndData += "\"problemType\" : \""+"BAISC_BOOL"+"\",\n";
+		frontEndData += "\"configuration\" : \n"+ param.toString() +"\n";
+		frontEndData += "}";
+		
+		File currentModelFile2 = new File(currentFileDir.getAbsolutePath()+ "\\src-gen\\" +Frontend_config+".json");
+		BufferedWriter bw2;
+		try {
+			bw2 = new BufferedWriter(new FileWriter(currentModelFile2));
+			bw2.write(frontEndData);
+			bw2.close();	
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
 		
 		CompilationParameters params;
 		Compiler compiler= new Compiler();
@@ -175,16 +267,12 @@ public class Verification {
 	}
 	private static File verifyDirectory(String dir) {
 		File fileDir = new File(dir);
-		//System.out.println("fileDir: "+fileDir.getAbsolutePath());
 		if(!fileDir.exists()) fileDir.mkdir();
 		return fileDir;
 	}
 	private void parsehlvl(String data_string, String name, File currentFileDir, JsonObject param) {
 		hlvl_parser = new VariamosXMLToHlvlParser();
 		String result = "";
-		//System.out.println("Data:");
-		//System.out.println("Received xml:" + data_string);
-		//System.out.println(data_string.substring(0,1000));
 		try {
 			result = hlvl_parser.parse(data_string, name);
 		} catch (Exception e) {
@@ -193,7 +281,6 @@ public class Verification {
 		}
 		
 		File currentModelFile1 = new File(currentFileDir.getAbsolutePath()+"/"+ name +".hlvl");
-		//System.out.println(currentModelFile.getAbsolutePath());
 		BufferedWriter bw1;
 		try {
 			bw1 = new BufferedWriter(new FileWriter(currentModelFile1));
@@ -250,120 +337,14 @@ public class Verification {
 				"}\r\n";
 		
 		File currentModelFile3 = new File(currentFileDir.getAbsolutePath()+ "\\src-gen\\" +Solver_config+".json");
-		//System.out.println(currentModelFile.getAbsolutePath());
 		BufferedWriter bw3;
 		try {
 			bw3 = new BufferedWriter(new FileWriter(currentModelFile3));
 			bw3.write(coffeesolver);
 			bw3.close();	
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
-		
-		String frontEndData = 
-				"{\n";
-		frontEndData += "\"solverSelected\" : \""+"\",\n";
-		frontEndData += "\"problemType\" : \""+"BAISC_BOOL"+"\",\n";
-		frontEndData += "\"configuration\" : \n"+ param.toString() +"\n";
-		frontEndData += "}";
-		
-		File currentModelFile2 = new File(currentFileDir.getAbsolutePath()+ "\\src-gen\\" +Frontend_config+".json");
-		//System.out.println(currentModelFile.getAbsolutePath());
-		BufferedWriter bw2;
-		try {
-			bw2 = new BufferedWriter(new FileWriter(currentModelFile2));
-			bw2.write(frontEndData);
-			bw2.close();	
-		} catch (IOException e) {
-			e.printStackTrace();
-		}	
-	}
-	
-	private boolean checksubsets(int length, List<String> temparray, JsonObject param, File currentFileDir, String name) {
-		String[][] result = new String [(int) Math.pow(2,length)][length];
-		if(temparray.size() == 0)
-			return false;
-		result[0][0] = temparray.get(0);
-		if(getsolverresult(param, currentFileDir, name, result[0]))
-			return true;
-		int currentlength = 1;
-		for(int i = 1 ; i < length; i++)
-		{
-			String[][] temp = new String [currentlength+1][length];
-			for(int j = 0; j < currentlength; j++)
-			{
-				int stoplength = 0;
-				for(int k = 0 ; k < length; k++)
-				{
-					temp[j][k]= result[j][k];
-					if(result[j][k] != null)
-						stoplength++;
-				}
-				temp[j][stoplength] = temparray.get(i);
-				if(getsolverresult(param, currentFileDir, name, temp[j]))
-					return true;
-			}
-			temp[currentlength][0] = temparray.get(i);
-			if(getsolverresult(param, currentFileDir, name, temp[currentlength]))
-				return true;
-			for(int j = 0; j < currentlength + 1; j++)
-			{
-				result[currentlength+j] = temp[j];
-			}
-			currentlength = currentlength + currentlength + 1;
-		}
-		return false;
-	}
-	
-	private List<String> checkdeadsubsets(int length, List<String> temparray, JsonObject param, File currentFileDir, String name) {
-		List<String> cache = new ArrayList<String>();
-		for(int i = 0; i < length; i++)
-		{
-			cache.add(i, temparray.get(i));
-		}
-		String[][] result = new String [(int) Math.pow(2,length)][length];
-		if(temparray.size() == 0)
-			return cache;
-		result[0][0] = temparray.get(0);
-		if(getsolverresult(param, currentFileDir, name, result[0]))
-			cache.remove(result[0][0]);
-		int currentlength = 1;
-		for(int i = 1 ; i < length; i++)
-		{
-			String[][] temp = new String [currentlength+1][length];
-			for(int j = 0; j < currentlength; j++)
-			{
-				int stoplength = 0;
-				for(int k = 0 ; k < length; k++)
-				{
-					temp[j][k]= result[j][k];
-					if(result[j][k] != null)
-						stoplength++;
-				}
-				
-				temp[j][stoplength] = temparray.get(i);
-				if(getsolverresult(param, currentFileDir, name, temp[j]))
-				{
-					for(int a = 0; a < stoplength + 1; a++)
-					{
-						if(cache.contains(temp[j][a]))
-							cache.remove(temp[j][a]);
-					}
-					if(cache.size() == 0)
-						return cache;
-				}
-			}
-			temp[currentlength][0] = temparray.get(i);
-			if(getsolverresult(param, currentFileDir, name, temp[currentlength]) && cache.contains(temp[currentlength][0]))
-				cache.remove(temp[currentlength][0]);
-			if(cache.size() == 0)
-				return cache;
-			for(int j = 0; j < currentlength + 1; j++)
-			{
-				result[currentlength+j] = temp[j];
-			}
-			currentlength = currentlength + currentlength + 1;
-		}
-		return cache;
 	}
 }
