@@ -81,7 +81,15 @@ public interface IHlvlBasicFactory {
 	//TODO This definition may change
 	//public String getExpression();
 	
-
+	/**
+	 * 
+	 * @param parent id of the parent 
+	 * @param children list of the cildren's identifiers
+	 * @param type can be Alternative and Or, the group types supported by HLVL(basic)
+	 * @param range is the cardinality between low range and high range
+	 * @return an hlvl sentence in the form group(parent, [c1, c2, ..cn], [m,n])
+	 */
+	public String getRangeGroup(String parent, List<String> children, GroupType type, String range);
 	
 	/**
 	 * 

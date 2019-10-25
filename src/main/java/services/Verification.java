@@ -56,9 +56,9 @@ public class Verification {
 	}
 	
 	@CrossOrigin
-	@RequestMapping(value="/Verification/check_void_false", method=RequestMethod.POST, produces="text/plain")
+	@RequestMapping(value="/Verification/check_void", method=RequestMethod.POST, produces="text/plain")
 	@ResponseBody
-	public String check_void_false(@RequestBody String data_collected) {
+	public String check_void(@RequestBody String data_collected) {
 		JsonParser parser = new JsonParser();
 		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
 		JsonElement data = rootObj.get("data");
@@ -73,11 +73,105 @@ public class Verification {
 		parsehlvl(data_string, name, currentFileDir, param);
 		
 		JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
-		objectBuilder.add("root", true);
+//		objectBuilder.add("root", true);
 		javax.json.JsonObject selections = objectBuilder.build();
 		String returnmessage = "";
 		if(getsolverresult(selections, currentFileDir, name))
 			returnmessage = "There is at least one solution.";
+		else
+			returnmessage = "There is no solution.";
+		System.out.println("End");
+		return returnmessage;
+	}
+	
+	@CrossOrigin
+	@RequestMapping(value="/Verification/check_false", method=RequestMethod.POST, produces="text/plain")
+	@ResponseBody
+	public String check_false(@RequestBody String data_collected) {
+		JsonParser parser = new JsonParser();
+		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
+		JsonElement data = rootObj.get("data");
+		String name = rootObj.get("name").getAsString();
+		name = name.replaceAll("\\s","");
+		name = name.replaceAll("-","");
+		String data_string = data.getAsString();
+		JsonObject param = rootObj.get("param").getAsJsonObject();
+
+		File currentFileDir = verifyDirectory(project_direction+"testfiles\\");
+		
+		parsehlvl(data_string, name, currentFileDir, param);
+		
+		JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+		javax.json.JsonObject selections = objectBuilder.build();
+		String frontEndData = 
+				"{\n";
+		frontEndData += "\"solverSelected\" : \""+"\",\n";
+		frontEndData += "\"problemType\" : \""+"BAISC_BOOL"+"\",\n";
+		frontEndData += "\"configuration\" : \n"+ selections.toString() +"\n";
+		frontEndData += "}";
+		
+		File currentModelFile2 = new File(currentFileDir.getAbsolutePath()+ "\\src-gen\\" +Frontend_config+".json");
+		BufferedWriter bw2;
+		try {
+			bw2 = new BufferedWriter(new FileWriter(currentModelFile2));
+			bw2.write(frontEndData);
+			bw2.close();	
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
+		
+		CompilationParameters params;
+		Compiler compiler= new Compiler();
+		try {
+			params = new CompilationParameters(
+					project_direction+"testfiles\\src-gen\\", //INPUT_FILES_PATH 
+					project_direction+"testfiles\\src-gen\\", //MZN_FILES_PATH 
+					project_direction+"testfiles\\", //OUTPUT_FILES_PATH
+					name,
+					Solver_config,
+					Frontend_config,
+					SourceOfCompilation.FILE
+					);
+			compiler.setUpCompilation(params);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		CompilerAnswer solution = null;
+		try {
+			solution = compiler.getSolutions(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		String returnmessage = "";
+		if(!solution.getState().contains("UNSATISFIABLE"))
+		{
+			returnmessage = "There is only one solution.";
+			String[] parts = solution.getSolutions().iterator().next().toString().split("\n");
+			
+			for(int j = 1; j < parts.length-1; j++)
+			{
+				JsonObjectBuilder Builder = Json.createObjectBuilder();
+				if(parts[j].split(", ")[1].contains("true"))
+				{
+					Builder.add(parts[j].split(", ")[0], false);
+				}
+				else
+				{
+					Builder.add(parts[j].split(", ")[0], true);
+				}
+				javax.json.JsonObject sec = Builder.build();
+				if(getsolverresult(sec, currentFileDir, name))
+				{
+					returnmessage = "There are at least two solutions.";
+					break;
+				}
+			}
+		}
 		else
 			returnmessage = "There is no solution.";
 		System.out.println("End");
@@ -140,7 +234,7 @@ public class Verification {
 		
 		List<String> temparray = new ArrayList<String>();
 		for (String keyStr : optionals.keySet()) {
-			System.out.println("False optional:" + keyStr);
+			//System.out.println("False optional:" + keyStr);
 			
 			String frontEndData = 
 					"{\n";
@@ -186,6 +280,8 @@ public class Verification {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			if(solution.getState().contains("UNSATISFIABLE"))
+				continue;
 			String[] parts = solution.getSolutions().iterator().next().toString().split("\n");
 			JsonObjectBuilder Builder = Json.createObjectBuilder();
 			for(int j = 1; j < parts.length-1; j++)
@@ -260,7 +356,6 @@ public class Verification {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println(solution.getState());
 		if(solution.getState().contains("UNSATISFIABLE"))
 			return false;
 		return true;

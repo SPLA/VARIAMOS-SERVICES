@@ -99,6 +99,16 @@ public class HlvlBasicFactory implements IHlvlBasicFactory,HlvlBasicKeys{
 		return out;
 	}
 	@Override
+	public String getRangeGroup(String parent, List<String> children, GroupType type, String range) {
+		String out=id+ (numId++) + COLON+  GROUP + OPEN_CALL +  parent+ COMMA +  OPEN_LIST;
+
+		for(String id: children){
+			out+= id+ COMMA + SPACE;
+		}
+		out = out.substring(0, out.length() -2 )+ CLOSE_LIST + COMMA + range +  CLOSE_CALL+"\n";
+		return out;
+	}
+	@Override
 	public String parseCNF2expression(List<String> positives, List<String> negatives) {
 		return expFactory.getCNF2expression(positives, negatives, numId++, id); 
 	}

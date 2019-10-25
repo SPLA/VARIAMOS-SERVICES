@@ -189,20 +189,25 @@ public class XmlReader {
 	public void addBundleElement(Node n) {
 		Element xmlElement = new Element();
 
-		String name = n.getAttributes().item(5).getNodeValue();
-
+		String name = n.getAttributes().item(3).getNodeValue();
 		xmlElement.setName(name);
 
 		String id = n.getAttributes().item(2).getNodeValue();
 		xmlElement.setId(id);
 
-		String type = n.getAttributes().item(3).getNodeValue();
+		String type = n.getAttributes().item(5).getNodeValue();
 		xmlElement.setType(type);
+		
+		String high = n.getAttributes().item(1).getNodeValue();
+		xmlElement.sethighrange(high);
+		
+		String low = n.getAttributes().item(4).getNodeValue();
+		xmlElement.setlowrange(low);
 
 		String bundleType = n.getAttributes().item(0).getNodeValue();
 
 		xmlElement.setBundleType(bundleType);
-
+		
 		if (!id.contains("clon")) {
 
 			xmlElements.put(id, xmlElement);

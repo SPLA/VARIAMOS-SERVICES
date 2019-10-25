@@ -28,7 +28,14 @@ public class Element {
 	 * @param String: Element's bundleType
 	 */
 	private String bundleType;
-	
+	/**
+	 * @param String: Element's low range
+	 */
+	private String lowrange;
+	/**
+	 * @param String: Element's high range
+	 */
+	private String highrange;
 	/**
 	 * this method return the element's name
 	 * 
@@ -110,6 +117,38 @@ public class Element {
 	 */
 	public void setBundleType(String bundleType) {
 		this.bundleType = bundleType;
+	}
+	/**
+	 * this method return the element's low range
+	 * 
+	 * @return String: element's low range
+	 */
+	public String getlowrange() {
+		return lowrange;
+	}
+	/**
+	 * this method change element's low range value for paramater.
+	 * 
+	 * @param bundleType: element's low range
+	 */
+	public void setlowrange(String lowrange) {
+		this.lowrange = lowrange;
+	}
+	/**
+	 * this method return the element's high range
+	 * 
+	 * @return String: element's high range
+	 */
+	public String gethighrange() {
+		return highrange;
+	}
+	/**
+	 * this method change element's high range value for paramater.
+	 * 
+	 * @param bundleType: element's high range
+	 */
+	public void sethighrange(String highrange) {
+		this.highrange = highrange;
 	}
 
 }

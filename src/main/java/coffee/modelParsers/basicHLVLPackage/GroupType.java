@@ -14,5 +14,6 @@ package coffee.modelParsers.basicHLVLPackage;
 public enum GroupType {
 	Xor,
 	Or,
-	And
+	And,
+	Range
 }
