@@ -309,6 +309,61 @@ public class Verification {
 		return response_result.toString();
 	}
 	
+	@CrossOrigin
+	@RequestMapping(value="/Verification/check_multi_conflict", method=RequestMethod.POST, produces="text/plain")
+	@ResponseBody
+	public String check_multi_conflicts(@RequestBody String data_collected) {
+		JsonParser parser = new JsonParser();
+		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
+		JsonElement data = rootObj.get("data");
+		String name = rootObj.get("name").getAsString();
+		name = name.replaceAll("\\s","");
+		name = name.replaceAll("-","");
+		String data_string = data.getAsString();
+		JsonObject param = rootObj.get("param").getAsJsonObject();
+
+		File currentFileDir = verifyDirectory(project_direction+"testfiles\\");
+		
+		parsehlvl(data_string, name, currentFileDir, param);
+		
+		JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+//		objectBuilder.add("root", true);
+		javax.json.JsonObject selections = objectBuilder.build();
+		String returnmessage = "There is no multiplicity conflict.";
+		if(!getsolverresult(selections, currentFileDir, name))
+		{
+			String check_xml = rootObj.get("check_xml").getAsString();
+			parsehlvl(check_xml, name, currentFileDir, param);
+			if(getsolverresult(selections, currentFileDir, name))
+				returnmessage = "There are some multiplicity conflicts.";
+		}
+		System.out.println("End");
+		return returnmessage;
+	}
+	
+	@CrossOrigin
+	@RequestMapping(value="/Verification/check_HLVL", method=RequestMethod.POST, produces="text/plain")
+	@ResponseBody
+	public String check_HLVL(@RequestBody String data_collected) {
+		JsonParser parser = new JsonParser();
+		JsonObject rootObj = parser.parse(data_collected).getAsJsonObject();
+		JsonElement data = rootObj.get("data");
+		String name = rootObj.get("name").getAsString();
+		name = name.replaceAll("\\s","");
+		name = name.replaceAll("-","");
+		String data_string = data.getAsString();
+		
+		hlvl_parser = new VariamosXMLToHlvlParser();
+		String result = "";
+		try {
+			result = hlvl_parser.parse(data_string, name);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	private boolean getsolverresult(javax.json.JsonObject param, File currentFileDir, String name) {
 		System.out.println("Configuration: " + param.toString());
 		
