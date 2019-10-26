@@ -304,7 +304,11 @@ public class Verification {
 			// keep this solution and only change optional feature to false
 			for(int j = 1; j < parts.length-1; j++)
 			{
-				if(parts[j].split(", ")[1].contains("true") && !parts[j].split(", ")[0].contains(keyStr))
+				if(parts[j].split(", ")[1].contains("true") && !parts[j].split(", ")[0].equals(keyStr))
+				{
+					Builder.add(parts[j].split(", ")[0], true);
+				}
+				else if(parts[j].split(", ")[1].contains("1") && !parts[j].split(", ")[0].equals(keyStr))
 				{
 					Builder.add(parts[j].split(", ")[0], true);
 				}
