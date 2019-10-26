@@ -34,8 +34,15 @@ import commandExecutor.CmdExecutor;
 @Controller
 public class Verification {
 	
+	/**
+	 * @param hlvl_parser the parser from xml of VariamosWeb to HLVL
+	 * @TODO project_direction need to find a good way to execute HLVLparser.jar
+	 * @TODO Solver_config the list of coffee solvers are not completed.
+	 * @TODO Solver_selected currently, Gecode is default solver.
+	 * @param Frontend_config the name of configuration for solver.
+	 */
 	private static VariamosXMLToHlvlParser hlvl_parser = new VariamosXMLToHlvlParser();
-	private String project_direction = "C:\\Users\\admin\\git\\VARIAMOS-SERVICES\\";
+	private String project_direction = Compiler.class.getProtectionDomain().getCodeSource().getLocation().getPath().split("compiler.jar")[0].substring(1);
 	private String Solver_config = "CoffeeSolvers";
 	private String Solver_selected = "Gecode";
 	private String Frontend_config = "frontend";
@@ -68,12 +75,14 @@ public class Verification {
 		String data_string = data.getAsString();
 		JsonObject param = rootObj.get("param").getAsJsonObject();
 
+		// set the path for all the files
 		File currentFileDir = verifyDirectory(project_direction+"testfiles\\");
 		
+		// run xmltoHLVL parser, HLVL parser, manage coffee solver lists
 		parsehlvl(data_string, name, currentFileDir, param);
 		
+		// send empty object to get one solution from solver
 		JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
-//		objectBuilder.add("root", true);
 		javax.json.JsonObject selections = objectBuilder.build();
 		String returnmessage = "";
 		if(getsolverresult(selections, currentFileDir, name))
@@ -148,11 +157,13 @@ public class Verification {
 			e.printStackTrace();
 		}
 		String returnmessage = "";
+		// check the first solution
 		if(!solution.getState().contains("UNSATISFIABLE"))
 		{
 			returnmessage = "There is only one solution.";
+			// get this first solution
 			String[] parts = solution.getSolutions().iterator().next().toString().split("\n");
-			
+			// check the second solution based on first solution
 			for(int j = 1; j < parts.length-1; j++)
 			{
 				JsonObjectBuilder Builder = Json.createObjectBuilder();
@@ -165,6 +176,7 @@ public class Verification {
 					Builder.add(parts[j].split(", ")[0], true);
 				}
 				javax.json.JsonObject sec = Builder.build();
+				// if there is second solution
 				if(getsolverresult(sec, currentFileDir, name))
 				{
 					returnmessage = "There are at least two solutions.";
@@ -195,15 +207,17 @@ public class Verification {
 		
 		parsehlvl(data_string, name, currentFileDir, param);
 		
+		// check every feature
 		List<String> temparray = new ArrayList<String>();
 		for (String keyStr : param.keySet()) {
 			JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
 			objectBuilder.add(keyStr, true);
 			javax.json.JsonObject selections = objectBuilder.build();
+			// if feature has no solution, add this feature to dead features
 			if(!getsolverresult(selections, currentFileDir, name))
 				temparray.add(keyStr);
 	    }
-		
+		// return all the dead features
 		JsonObjectBuilder Builder = Json.createObjectBuilder();
 		for(int i = 0; i < temparray.size(); i++)
 		{
@@ -232,6 +246,7 @@ public class Verification {
 		
 		parsehlvl(data_string, name, currentFileDir, param);
 		
+		// check each optional feature
 		List<String> temparray = new ArrayList<String>();
 		for (String keyStr : optionals.keySet()) {
 			//System.out.println("False optional:" + keyStr);
@@ -280,10 +295,13 @@ public class Verification {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			// if optional feature has no solution, go to the next optional feature
 			if(solution.getState().contains("UNSATISFIABLE"))
 				continue;
+			// if optional feature has one solution, get solutions from solver
 			String[] parts = solution.getSolutions().iterator().next().toString().split("\n");
 			JsonObjectBuilder Builder = Json.createObjectBuilder();
+			// keep this solution and only change optional feature to false
 			for(int j = 1; j < parts.length-1; j++)
 			{
 				if(parts[j].split(", ")[1].contains("true") && !parts[j].split(", ")[0].contains(keyStr))
@@ -296,9 +314,11 @@ public class Verification {
 				}
 			}
 			javax.json.JsonObject selections = Builder.build();
+			// if there is no solution, add this optional feature to false optional features
 			if(!getsolverresult(selections, currentFileDir, name))
 				temparray.add(keyStr);
 	    }
+		// return all the false optional features
 		JsonObjectBuilder Builder = Json.createObjectBuilder();
 		for(int i = 0; i < temparray.size(); i++)
 		{
@@ -327,13 +347,14 @@ public class Verification {
 		parsehlvl(data_string, name, currentFileDir, param);
 		
 		JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
-//		objectBuilder.add("root", true);
 		javax.json.JsonObject selections = objectBuilder.build();
 		String returnmessage = "There is no multiplicity conflict.";
+		// if feature model has no solution
 		if(!getsolverresult(selections, currentFileDir, name))
 		{
 			String check_xml = rootObj.get("check_xml").getAsString();
 			parsehlvl(check_xml, name, currentFileDir, param);
+			// if feature model without cardinality has at least one solution
 			if(getsolverresult(selections, currentFileDir, name))
 				returnmessage = "There are some multiplicity conflicts.";
 		}
@@ -341,6 +362,7 @@ public class Verification {
 		return returnmessage;
 	}
 	
+	// return HLVL code to frontend
 	@CrossOrigin
 	@RequestMapping(value="/Verification/check_HLVL", method=RequestMethod.POST, produces="text/plain")
 	@ResponseBody
@@ -364,9 +386,11 @@ public class Verification {
 		return result;
 	}
 	
+	// get results from solver based on input selections
 	private boolean getsolverresult(javax.json.JsonObject param, File currentFileDir, String name) {
 		System.out.println("Configuration: " + param.toString());
 		
+		// write input selections in frontend file
 		String frontEndData = 
 				"{\n";
 		frontEndData += "\"solverSelected\" : \""+"\",\n";
@@ -384,6 +408,7 @@ public class Verification {
 			e.printStackTrace();
 		}	
 		
+		// manage the inputs for solver
 		CompilationParameters params;
 		Compiler compiler= new Compiler();
 		try {
@@ -405,6 +430,7 @@ public class Verification {
 			e.printStackTrace();
 		}
 		
+		// get one solution from solver
 		CompilerAnswer solution = null;
 		try {
 			solution = compiler.getSolutions(1);
@@ -415,11 +441,15 @@ public class Verification {
 			return false;
 		return true;
 	}
+	
+	// verify the test path
 	private static File verifyDirectory(String dir) {
 		File fileDir = new File(dir);
 		if(!fileDir.exists()) fileDir.mkdir();
 		return fileDir;
 	}
+	
+	// run xmltoHLVL parser, HLVL parser, manage coffee solver lists
 	private void parsehlvl(String data_string, String name, File currentFileDir, JsonObject param) {
 		hlvl_parser = new VariamosXMLToHlvlParser();
 		String result = "";
@@ -430,6 +460,7 @@ public class Verification {
 			e.printStackTrace();
 		}
 		
+		// write HLVL code in the file
 		File currentModelFile1 = new File(currentFileDir.getAbsolutePath()+"/"+ name +".hlvl");
 		BufferedWriter bw1;
 		try {
@@ -444,7 +475,8 @@ public class Verification {
 		CmdExecutor executor = new CmdExecutor(project_direction+"testfiles\\");
 		List<String> temp = new ArrayList<String>();
 		
-		String command = "java -jar " + project_direction + "src\\main\\webapp\\WEB-INF\\lib\\HLVLParser.jar "+ name +".hlvl";
+		// execute HLVLParser.jar
+		String command = "java -jar " + project_direction + "HLVLParser.jar "+ name +".hlvl";
 		temp.add(command);
 		
 		executor.setCommandInConsole(temp);
@@ -458,6 +490,7 @@ public class Verification {
 			e1.printStackTrace();
 		}
 		
+		// write coffee solver lists into file
 		String coffeesolver = "{\r\n" + 
 				"\"CSPSolver\": [\r\n" + 
 				"		{\r\n" + 
