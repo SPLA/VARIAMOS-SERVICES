@@ -54,13 +54,38 @@
 	    <version>2.2.1</version>
 	</dependency>
 	<dependency>
+			<groupId>coffee</groupId>
+			<artifactId>compiler</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}\src\main\webapp\WEB-INF\lib\compiler.jar</systemPath>
+		</dependency>
+	<dependency>
+			<groupId>coffee</groupId>
+			<artifactId>common</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}\src\main\webapp\WEB-INF\lib\common.jar</systemPath>
+	</dependency>
+	<dependency>
+			<groupId>javax.json</groupId>
+			<artifactId>json</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}\src\main\webapp\WEB-INF\lib\javax.json.jar</systemPath>
+	</dependency>
+  <dependency>
 	    <groupId>org.apache.httpcomponents</groupId>
 	    <artifactId>httpclient</artifactId>
 	    <version>4.4.1</version>
 	</dependency>
-	
   </dependencies>
   <build>
     <finalName>VariaMosServices</finalName>
   </build>
+  <properties>
+  		<maven.compiler.source>1.8</maven.compiler.source>
+    	<maven.compiler.target>1.8</maven.compiler.target>
+		<xtext.version>2.17.1</xtext.version>
+	</properties>
 </project>
