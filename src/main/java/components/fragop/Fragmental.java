@@ -151,8 +151,6 @@ public class Fragmental {
 	            		} catch (ZipException e) {
 	            		    e.printStackTrace();
 	            		}
-	            		
-	            		System.out.println(filename);
 	            	}else {
 	            		FileUtilsApache.copyFile(source_f, dest_f);
 	            	}
