@@ -67,6 +67,7 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}\src\main\webapp\WEB-INF\lib\common.jar</systemPath>
 	</dependency>
+	<!-- TO FIX -> MUST BE REMOVED -->
 	<dependency>
 			<groupId>javax.json</groupId>
 			<artifactId>json</artifactId>
@@ -74,7 +75,8 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}\src\main\webapp\WEB-INF\lib\javax.json.jar</systemPath>
 	</dependency>
-  <dependency>
+	<!-- TO FIX -> MUST BE REMOVED -->
+    <dependency>
 	    <groupId>org.apache.httpcomponents</groupId>
 	    <artifactId>httpclient</artifactId>
 	    <version>4.4.1</version>
@@ -87,5 +89,5 @@
   		<maven.compiler.source>1.8</maven.compiler.source>
     	<maven.compiler.target>1.8</maven.compiler.target>
 		<xtext.version>2.17.1</xtext.version>
-	</properties>
+  </properties>
 </project>
