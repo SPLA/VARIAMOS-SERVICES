@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.tomcat.util.codec.binary.Base64;
+//import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -123,7 +123,7 @@ public class Repo {
 	
 	public HttpHeaders getHeaders(String token) {
 		token = token + ":x-oauth-basic";
-		String authString = "Basic " + Base64.encodeBase64String(token.getBytes());
+		String authString = "Basic "; //+ Base64.encodeBase64String(token.getBytes());
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 	    headers.setContentType(MediaType.APPLICATION_JSON);
