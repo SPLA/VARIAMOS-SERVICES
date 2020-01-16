@@ -1,0 +1,169 @@
+package requirex.models.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import db.Pool;
+import requirex.models.entitys.Application;
+
+public class ApplicationDaoImp implements IApplicationDao {
+
+	Pool pool = null;
+
+	public ApplicationDaoImp() {
+	}
+
+	@Override
+	public List<Application> findAll() {
+		List<Application> list = new ArrayList<Application>();
+		String query = "SELECT * FROM application";
+		Statement st = null;
+		
+		try {
+			pool = new Pool();
+			Connection conn = pool.dataSource.getConnection();
+			if (conn != null) {
+
+				st = conn.createStatement();
+
+				ResultSet rs = st.executeQuery(query);
+				
+				while (rs.next()) {
+					
+					Application app = setApplciation(rs);
+					
+					list.add(app);
+				}
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			 try {
+				st.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<Application> findAllByEstado(boolean estado) {
+		List<Application> list = new ArrayList<Application>();
+		String query = "SELECT * FROM application Where estado = ?";
+		PreparedStatement prepStatement = null;
+		
+		try {
+			pool = new Pool();
+			Connection conn = pool.dataSource.getConnection();
+			if (conn != null) {
+
+				prepStatement = conn.prepareStatement(query);
+				prepStatement.setBoolean(1, estado);
+
+				ResultSet rs = prepStatement.executeQuery(query);
+				
+				while (rs.next()) {
+					
+					Application app = setApplciation(rs);
+					
+					list.add(app);
+				}
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			if(prepStatement != null) {
+				try {
+					prepStatement.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return list;
+	}
+
+	@Override
+	public Application findById(int id) {
+		String query = "SELECT * FROM application Where id = ?";
+		PreparedStatement prepStatement = null;
+		Application app = null;
+		
+		try {
+			pool = new Pool();
+			Connection conn = pool.dataSource.getConnection();
+			if (conn != null) {
+
+				prepStatement = conn.prepareStatement(query);
+				prepStatement.setInt(1, id);
+
+				ResultSet rs = prepStatement.executeQuery(query);
+				
+				while (rs.next()) {
+					
+					app = setApplciation(rs);
+					
+				}
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			if(prepStatement != null) {
+				try {
+					prepStatement.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return app;
+	}
+	
+	private Application setApplciation(ResultSet rs) {
+		Application app = new Application();
+		
+		try {
+			app.setId(rs.getInt("id"));
+			app.setRequirementNumber(rs.getString("requirementNumber"));
+			app.setReqType(rs.getString("reqType"));
+			app.setName(rs.getString("name"));
+			app.setCondition(rs.getBoolean("condition"));
+			app.setConditionDescription(rs.getString("conditionDescription"));
+			app.setImperative(rs.getString("imperative"));
+			app.setSystemName(rs.getString("systemName"));
+			app.setSystemActivity(rs.getString("systemActivity"));
+			app.setUser(rs.getString("user"));
+			app.setProcessVerb(rs.getString("processVerb"));
+			app.setObject(rs.getString("object"));
+			app.setSystem(rs.getString("system"));
+			app.setFrom(rs.getString("from"));
+			app.setSystemCondition(rs.getBoolean("systemCondition"));;
+			app.setSystemConditionDescription(rs.getString("systemConditionDescription"));
+			app.setMsg(rs.getString("msg"));
+			app.setEstado(rs.getBoolean("estado"));
+			app.setFechaRegistro(rs.getDate("fecha_registro"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return app;
+	}
+
+}
