@@ -8,32 +8,30 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import db.Pool;
+import db.ConnectionManager;
 import requirex.models.entitys.Adaptation;
 
 public class AdaptationDaoImp implements IAdaptationDao {
-	
-	Pool pool = null;
 
 	@Override
 	public List<Adaptation> findAll() {
 		List<Adaptation> list = new ArrayList<Adaptation>();
 		String query = "SELECT * FROM adaptation";
 		Statement st = null;
-		
+		Connection conn = null;
+
 		try {
-			pool = new Pool();
-			Connection conn = pool.dataSource.getConnection();
+			conn = ConnectionManager.getConnection();
 			if (conn != null) {
 
 				st = conn.createStatement();
 
 				ResultSet rs = st.executeQuery(query);
-				
+
 				while (rs.next()) {
-					
+
 					Adaptation adaptation = setAdaptation(rs);
-					
+
 					list.add(adaptation);
 				}
 			}
@@ -41,9 +39,12 @@ public class AdaptationDaoImp implements IAdaptationDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally {
-			 try {
-				st.close();
+		} finally {
+			try {
+				if (st != null)
+					st.close();
+				if (conn != null)
+					conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -57,21 +58,21 @@ public class AdaptationDaoImp implements IAdaptationDao {
 		List<Adaptation> list = new ArrayList<Adaptation>();
 		String query = "SELECT * FROM application Where estado = ?";
 		PreparedStatement prepStatement = null;
-		
+		Connection conn = null;
 		try {
-			pool = new Pool();
-			Connection conn = pool.dataSource.getConnection();
+			conn = ConnectionManager.getConnection();
+
 			if (conn != null) {
 
 				prepStatement = conn.prepareStatement(query);
 				prepStatement.setBoolean(1, estado);
 
 				ResultSet rs = prepStatement.executeQuery(query);
-				
+
 				while (rs.next()) {
-					
+
 					Adaptation app = setAdaptation(rs);
-					
+
 					list.add(app);
 				}
 			}
@@ -79,10 +80,13 @@ public class AdaptationDaoImp implements IAdaptationDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally {
-			if(prepStatement != null) {
+		} finally {
+			if (prepStatement != null) {
 				try {
-					prepStatement.close();
+					if (prepStatement != null)
+						prepStatement.close();
+					if (conn != null)
+						conn.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -97,31 +101,36 @@ public class AdaptationDaoImp implements IAdaptationDao {
 		String query = "SELECT * FROM adaptation Where id = ?";
 		PreparedStatement prepStatement = null;
 		Adaptation adaptation = null;
-		
+		Connection conn = null;
+
 		try {
-			pool = new Pool();
-			Connection conn = pool.dataSource.getConnection();
+
+			conn = ConnectionManager.getConnection();
+
 			if (conn != null) {
 
 				prepStatement = conn.prepareStatement(query);
 				prepStatement.setInt(1, id);
 
 				ResultSet rs = prepStatement.executeQuery(query);
-				
+
 				while (rs.next()) {
-					
+
 					adaptation = setAdaptation(rs);
-					
+
 				}
 			}
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally {
-			if(prepStatement != null) {
+		} finally {
+			if (prepStatement != null) {
 				try {
-					prepStatement.close();
+					if (prepStatement != null)
+						prepStatement.close();
+					if (conn != null)
+						conn.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -130,11 +139,20 @@ public class AdaptationDaoImp implements IAdaptationDao {
 
 		return adaptation;
 	}
-	
 
+	@Override
+	public Adaptation save(Adaptation adaptation) {
+		return null;
+	}
+
+	@Override
+	public Adaptation update(Adaptation adaptation) {
+		return null;
+	}
+	
 	private Adaptation setAdaptation(ResultSet rs) {
 		Adaptation app = new Adaptation();
-		
+
 		try {
 			app.setId(rs.getInt("id"));
 			app.setRequirementNumber(rs.getString("requirementNumber"));
@@ -144,7 +162,7 @@ public class AdaptationDaoImp implements IAdaptationDao {
 			app.setConditionDescription(rs.getString("conditionDescription"));
 			app.setImperative(rs.getString("imperative"));
 			app.setSystemName(rs.getString("systemName"));
-			
+
 			app.setProcessVerb(rs.getString("processVerb"));
 			app.setObject(rs.getString("object"));
 			app.setSystem(rs.getString("system"));
@@ -155,11 +173,9 @@ public class AdaptationDaoImp implements IAdaptationDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 		return app;
 	}
-
 
 
 }

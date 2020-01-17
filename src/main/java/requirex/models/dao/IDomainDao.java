@@ -12,5 +12,8 @@ public interface IDomainDao {
 	
 	public Domain findById(int id);
 	
+	public Domain save(Domain domain);
+
+	public Domain update(Domain domain);
 
 }

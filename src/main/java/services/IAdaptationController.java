@@ -1,19 +1,20 @@
-package requirex.models.dao;
+package services;
 
 import java.util.List;
 
 import requirex.models.entitys.Adaptation;
 
-public interface IAdaptationDao {
-
+public interface IAdaptationController {
+	
 	public List<Adaptation> findAll();
 
 	public List<Adaptation> findAllByEstado(boolean estado);
 
 	public Adaptation findById(int id);
 
+	public int findTotalByEstado(boolean estado);
+	
 	public Adaptation save(Adaptation adaptation);
-
+	
 	public Adaptation update(Adaptation adaptation);
-
 }

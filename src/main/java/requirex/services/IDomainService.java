@@ -11,7 +11,11 @@ public interface IDomainService {
 	public List<Domain> findByEstado(boolean estado);
 
 	public Domain findById(int id);
-	
+
 	public int getTotal(boolean estado);
+
+	public Domain save(Domain domain);
+
+	public Domain update(Domain domain);
 
 }

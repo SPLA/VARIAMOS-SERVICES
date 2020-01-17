@@ -3,6 +3,7 @@ package services;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,7 +12,7 @@ import requirex.services.DomainServiceImp;
 
 @RestController
 @RequestMapping("/requirex")
-public class DomainController implements IDomainController {
+public class DomainControllerImp implements IDomainController {
 	
 	DomainServiceImp domainService = new DomainServiceImp();
 
@@ -22,18 +23,33 @@ public class DomainController implements IDomainController {
 	}
 
 	@Override
-	public List<Domain> findByEstado(boolean estado) {
+	@GetMapping("/domains/byestaso/{estado}")
+	public List<Domain> findByEstado(@PathVariable boolean estado) {
 		return domainService.findByEstado(estado);
 	}
 
 	@Override
-	public Domain findById(int id) {
+	@GetMapping("/domains/{id}")
+	public Domain findById(@PathVariable int id) {
 		return domainService.findById(id);
 	}
 
 	@Override
-	public int getTotal(boolean estado) {
+	@GetMapping("/domains/bytotal/{estado}")
+	public int getTotal(@PathVariable boolean estado) {
 		return domainService.getTotal(estado);
+	}
+
+	@Override
+	public Domain save(Domain domain) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Domain update(Domain domain) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	

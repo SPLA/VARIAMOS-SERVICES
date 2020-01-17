@@ -1,10 +1,11 @@
-package requirex.services;
+package services;
 
 import java.util.List;
 
+import requirex.models.entitys.Adaptation;
 import requirex.models.entitys.Application;
 
-public interface IApplicationService {
+public interface IApplicationController {
 
 	public List<Application> findAll();
 

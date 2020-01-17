@@ -146,4 +146,16 @@ public class DomainDaoImp implements IDomainDao {
 		
 	}
 
+	@Override
+	public Domain save(Domain domain) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Domain update(Domain domain) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

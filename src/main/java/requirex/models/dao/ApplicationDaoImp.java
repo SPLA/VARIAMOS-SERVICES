@@ -8,35 +8,31 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import db.Pool;
+import db.ConnectionManager;
 import requirex.models.entitys.Application;
 
 public class ApplicationDaoImp implements IApplicationDao {
-
-	Pool pool = null;
-
-	public ApplicationDaoImp() {
-	}
 
 	@Override
 	public List<Application> findAll() {
 		List<Application> list = new ArrayList<Application>();
 		String query = "SELECT * FROM application";
 		Statement st = null;
-		
+		Connection conn = null;
+
 		try {
-			pool = new Pool();
-			Connection conn = pool.dataSource.getConnection();
+			conn = ConnectionManager.getConnection();
+
 			if (conn != null) {
 
 				st = conn.createStatement();
 
 				ResultSet rs = st.executeQuery(query);
-				
+
 				while (rs.next()) {
-					
+
 					Application app = setApplciation(rs);
-					
+
 					list.add(app);
 				}
 			}
@@ -44,9 +40,12 @@ public class ApplicationDaoImp implements IApplicationDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally {
-			 try {
-				st.close();
+		} finally {
+			try {
+				if (st != null)
+					st.close();
+				if (conn != null)
+					conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -60,21 +59,23 @@ public class ApplicationDaoImp implements IApplicationDao {
 		List<Application> list = new ArrayList<Application>();
 		String query = "SELECT * FROM application Where estado = ?";
 		PreparedStatement prepStatement = null;
-		
+		Connection conn = null;
+
 		try {
-			pool = new Pool();
-			Connection conn = pool.dataSource.getConnection();
+
+			conn = ConnectionManager.getConnection();
+
 			if (conn != null) {
 
 				prepStatement = conn.prepareStatement(query);
 				prepStatement.setBoolean(1, estado);
 
 				ResultSet rs = prepStatement.executeQuery(query);
-				
+
 				while (rs.next()) {
-					
+
 					Application app = setApplciation(rs);
-					
+
 					list.add(app);
 				}
 			}
@@ -82,10 +83,13 @@ public class ApplicationDaoImp implements IApplicationDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally {
-			if(prepStatement != null) {
+		} finally {
+			if (prepStatement != null) {
 				try {
-					prepStatement.close();
+					if (prepStatement != null)
+						prepStatement.close();
+					if (conn != null)
+						conn.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -100,31 +104,36 @@ public class ApplicationDaoImp implements IApplicationDao {
 		String query = "SELECT * FROM application Where id = ?";
 		PreparedStatement prepStatement = null;
 		Application app = null;
-		
+		Connection conn = null;
+
 		try {
-			pool = new Pool();
-			Connection conn = pool.dataSource.getConnection();
+
+			conn = ConnectionManager.getConnection();
+			
 			if (conn != null) {
 
 				prepStatement = conn.prepareStatement(query);
 				prepStatement.setInt(1, id);
 
 				ResultSet rs = prepStatement.executeQuery(query);
-				
+
 				while (rs.next()) {
-					
+
 					app = setApplciation(rs);
-					
+
 				}
 			}
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally {
-			if(prepStatement != null) {
+		} finally {
+			if (prepStatement != null) {
 				try {
-					prepStatement.close();
+					if (prepStatement != null)
+						prepStatement.close();
+					if (conn != null)
+						conn.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -134,9 +143,19 @@ public class ApplicationDaoImp implements IApplicationDao {
 		return app;
 	}
 	
+	@Override
+	public Application save(Application application) {
+		return null;
+	}
+
+	@Override
+	public Application update(Application application) {
+		return null;
+	}
+
 	private Application setApplciation(ResultSet rs) {
 		Application app = new Application();
-		
+
 		try {
 			app.setId(rs.getInt("id"));
 			app.setRequirementNumber(rs.getString("requirementNumber"));
@@ -152,17 +171,15 @@ public class ApplicationDaoImp implements IApplicationDao {
 			app.setObject(rs.getString("object"));
 			app.setSystem(rs.getString("system"));
 			app.setFrom(rs.getString("from"));
-			app.setSystemCondition(rs.getBoolean("systemCondition"));;
+			app.setSystemCondition(rs.getBoolean("systemCondition"));
 			app.setSystemConditionDescription(rs.getString("systemConditionDescription"));
 			app.setMsg(rs.getString("msg"));
 			app.setEstado(rs.getBoolean("estado"));
 			app.setFechaRegistro(rs.getDate("fecha_registro"));
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 		return app;
 	}
 

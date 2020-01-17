@@ -32,4 +32,14 @@ public class DomainServiceImp implements IDomainService {
 		return domainDao.findByEstado(estado).size();
 	}
 
+	@Override
+	public Domain save(Domain domain) {
+		return domainDao.save(domain);
+	}
+
+	@Override
+	public Domain update(Domain domain) {
+		return domainDao.update(domain);
+	}
+
 }

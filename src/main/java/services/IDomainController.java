@@ -14,4 +14,7 @@ public interface IDomainController {
 	
 	public int getTotal(boolean estado);
 
+	public Domain save(Domain domain);
+
+	public Domain update(Domain domain);
 }
