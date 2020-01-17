@@ -58,14 +58,14 @@
 			<artifactId>compiler</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}\src\main\webapp\WEB-INF\lib\compiler.jar</systemPath>
+			<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/compiler.jar</systemPath>
 		</dependency>
 	<dependency>
 			<groupId>coffee</groupId>
 			<artifactId>common</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}\src\main\webapp\WEB-INF\lib\common.jar</systemPath>
+			<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/common.jar</systemPath>
 	</dependency>
 	<!-- TO FIX -> MUST BE REMOVED -->
 	<dependency>
@@ -73,7 +73,7 @@
 			<artifactId>json</artifactId>
 			<version>1.0.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}\src\main\webapp\WEB-INF\lib\javax.json.jar</systemPath>
+			<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/javax.json.jar</systemPath>
 	</dependency>
 	<!-- TO FIX -> MUST BE REMOVED -->
     <dependency>
