@@ -1,4 +1,11 @@
-package services;
+package variamos.services;
+
+import org.springframework.boot.autoconfigure.*;
+import org.springframework.web.bind.annotation.*;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -6,19 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -31,17 +25,18 @@ import components.fragop.Fragmental;
 import components.util.FileUtilsApache;
 import lexermain.MainParser;
 
-@Controller
+@RestController
+@EnableAutoConfiguration
 public class ComponentImplementation {
 	
 	public static Resource resource_derived = new ClassPathResource("/uploads/component_derived/");
 	public static Resource resource_pool = new ClassPathResource("/uploads/component_pool/");
+	public String s_derived;
 	
 	@CrossOrigin
 	@RequestMapping(value="/ComponentImplementation/execute", method=RequestMethod.POST, produces="text/plain")
 	@ResponseBody
 	public String executeDerivation(@RequestBody String data_collected) {
-		
 		String completedMessage="";
 		boolean some_files=false;
 		JsonParser parser = new JsonParser();
@@ -53,10 +48,10 @@ public class ComponentImplementation {
 		resource_pool= new ClassPathResource(p_pool.getAsString());
 		JsonElement p_derived = rootObj.get("p_derived");
 		resource_derived= new ClassPathResource(p_derived.getAsString());
+		s_derived = p_derived.getAsString();
 	    
 	    JsonArray rootArray = parser.parse(data_string).getAsJsonArray();
 	    JsonArray rootFiles = rootArray.get(0).getAsJsonArray();
-	    
 	    List<Map<String, String>> files = new ArrayList();
 	    for (int i = 0; i < rootFiles.size(); i++) {
 	    	some_files=true;
@@ -86,6 +81,13 @@ public class ComponentImplementation {
 				}catch(Exception e){
 	                System.out.println(e.getMessage());
 	            }
+			}else {
+				/*try {
+					System.out.println(s_derived);
+					new File(s_derived).mkdirs();
+				}catch(Exception e){
+	                System.out.println(e.getMessage());
+	            }*/
 			}
 	    }else {
 	    	completedMessage="No components to assemble";
