@@ -120,7 +120,7 @@ public class XmlReader {
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			org.w3c.dom.Document xmlTree = builder.parse(new InputSource(new StringReader(xml)));
 			readDocument(xmlTree);
-		} catch (ParserConfigurationException | SAXException | IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
