@@ -1,16 +1,33 @@
-package requirex.models.entitys;
+package variamos.models.entitys;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Domain {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+@Entity
+public class Domain implements Serializable{
 	
-	public int id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	public long id;
     public String requirementNumber;
     public String affectedSystems;
     public String thoseCodition;
     public String reqType;
     public String name;
+
+	@Column(name = "`condition")
     public boolean condition;
+
+	@Column(nullable = true)
     public String conditionDescription;
     public String imperative;
     public String systemName;
@@ -18,18 +35,32 @@ public class Domain {
     public String user;
     public String processVerb;
     public String object;
+
+	@Column(name ="`system")
     public String system;
+
+	@Column(name = "`from")
     public String from;
     public boolean systemCondition;
+
+	@Column(nullable = true)
     public String systemConditionDescription;
     public String msg;
     public boolean estado;
-    public Date fecha_registro;
     
-	public int getId() {
+    @Column(name = "fechaRegistro")
+	@Temporal(TemporalType.DATE)
+	private Date fecha_registro;
+	
+	@PrePersist
+	public void prePersist () {
+		this.fecha_registro = new Date();
+	}
+    
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getRequirementNumber() {

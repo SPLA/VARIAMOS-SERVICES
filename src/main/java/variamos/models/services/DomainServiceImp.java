@@ -1,20 +1,22 @@
-package requirex.services;
+package variamos.models.services;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import requirex.models.dao.DomainDaoImp;
-import requirex.models.entitys.Domain;
+import variamos.models.dao.IDomainDao;
+import variamos.models.entitys.Domain;
 
 @Service
 public class DomainServiceImp implements IDomainService {
 	
-	DomainDaoImp domainDao = new DomainDaoImp();
+	@Autowired
+	private IDomainDao domainDao;
 
 	@Override
 	public List<Domain> findAll() {
-		return domainDao.findAll();
+		return (List<Domain>) domainDao.findAll();
 	}
 
 	@Override
@@ -23,8 +25,8 @@ public class DomainServiceImp implements IDomainService {
 	}
 
 	@Override
-	public Domain findById(int id) {
-		return domainDao.findById(id);
+	public Domain findById(long id) {
+		return domainDao.findById(id).orElse(null);
 	}
 
 	@Override
@@ -37,9 +39,5 @@ public class DomainServiceImp implements IDomainService {
 		return domainDao.save(domain);
 	}
 
-	@Override
-	public Domain update(Domain domain) {
-		return domainDao.update(domain);
-	}
 
 }

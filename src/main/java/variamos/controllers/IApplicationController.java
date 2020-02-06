@@ -1,9 +1,9 @@
-package services;
+package variamos.controllers;
 
 import java.util.List;
 
-import requirex.models.entitys.Adaptation;
-import requirex.models.entitys.Application;
+import variamos.models.entitys.Application;
+
 
 public interface IApplicationController {
 
@@ -17,6 +17,8 @@ public interface IApplicationController {
 
 	public Application save(Application application);
 
-	public Application update(Application application);
+	public Application update(Application application, long id);
+	
+	public void delete(long id);
 
 }

@@ -1,20 +1,20 @@
-package services;
+package variamos.models.services;
 
 import java.util.List;
 
-import requirex.models.entitys.Domain;
+import variamos.models.entitys.Domain;
 
-public interface IDomainController {
-	
+public interface IDomainService {
+
 	public List<Domain> findAll();
 
 	public List<Domain> findByEstado(boolean estado);
 
-	public Domain findById(int id);
-	
+	public Domain findById(long id);
+
 	public int getTotal(boolean estado);
 
 	public Domain save(Domain domain);
 
-	public Domain update(Domain domain);
+
 }

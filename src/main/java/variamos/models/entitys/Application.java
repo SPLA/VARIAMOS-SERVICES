@@ -1,32 +1,59 @@
-package requirex.models.entitys;
+package variamos.models.entitys;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class Adaptation implements Serializable{
-	
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+@Entity
+public class Application implements Serializable {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String requirementNumber;
 	private String reqType;
 	private String name;
+
+	@Column(name = "`condition")
 	private Boolean condition;
+	
+	@Column(nullable = true)
 	private String conditionDescription;
 	private String imperative;
 	private String systemName;
+	private String systemActivity;
+	private String user;
 	private String processVerb;
 	private String object;
+	
+	@Column(name ="`system")
 	private String system;
-	private String relaxing;
-	private String postBehaviour;
-	private String event;
-	private int timeInterval;
-	private String units;
-	private String quantity;
-	private String frecuency;
-	private String quantityFrecuency;
+	
+	@Column(name = "`from")
+	private String from;
+	private Boolean systemCondition;
+
+	@Column(nullable = true)
+	private String systemConditionDescription;
 	private String msg;
 	private Boolean estado;
+	
+	@Temporal(TemporalType.DATE)
 	private Date fechaRegistro;
+	
+	@PrePersist
+	public void prePersist () {
+		this.fechaRegistro = new Date();
+	}
+	
 	
 	public int getId() {
 		return id;
@@ -76,6 +103,18 @@ public class Adaptation implements Serializable{
 	public void setSystemName(String systemName) {
 		this.systemName = systemName;
 	}
+	public String getSystemActivity() {
+		return systemActivity;
+	}
+	public void setSystemActivity(String systemActivity) {
+		this.systemActivity = systemActivity;
+	}
+	public String getUser() {
+		return user;
+	}
+	public void setUser(String user) {
+		this.user = user;
+	}
 	public String getProcessVerb() {
 		return processVerb;
 	}
@@ -94,53 +133,23 @@ public class Adaptation implements Serializable{
 	public void setSystem(String system) {
 		this.system = system;
 	}
-	public String getRelaxing() {
-		return relaxing;
+	public String getFrom() {
+		return from;
 	}
-	public void setRelaxing(String relaxing) {
-		this.relaxing = relaxing;
+	public void setFrom(String from) {
+		this.from = from;
 	}
-	public String getPostBehaviour() {
-		return postBehaviour;
+	public Boolean getSystemCondition() {
+		return systemCondition;
 	}
-	public void setPostBehaviour(String postBehaviour) {
-		this.postBehaviour = postBehaviour;
+	public void setSystemCondition(Boolean systemCondition) {
+		this.systemCondition = systemCondition;
 	}
-	public String getEvent() {
-		return event;
+	public String getSystemConditionDescription() {
+		return systemConditionDescription;
 	}
-	public void setEvent(String event) {
-		this.event = event;
-	}
-	public int getTimeInterval() {
-		return timeInterval;
-	}
-	public void setTimeInterval(int timeInterval) {
-		this.timeInterval = timeInterval;
-	}
-	public String getUnits() {
-		return units;
-	}
-	public void setUnits(String units) {
-		this.units = units;
-	}
-	public String getQuantity() {
-		return quantity;
-	}
-	public void setQuantity(String quantity) {
-		this.quantity = quantity;
-	}
-	public String getFrecuency() {
-		return frecuency;
-	}
-	public void setFrecuency(String frecuency) {
-		this.frecuency = frecuency;
-	}
-	public String getQuantityFrecuency() {
-		return quantityFrecuency;
-	}
-	public void setQuantityFrecuency(String quantityFrecuency) {
-		this.quantityFrecuency = quantityFrecuency;
+	public void setSystemConditionDescription(String systemConditionDescription) {
+		this.systemConditionDescription = systemConditionDescription;
 	}
 	public String getMsg() {
 		return msg;
@@ -162,4 +171,5 @@ public class Adaptation implements Serializable{
 	}
 	
 	
+
 }
