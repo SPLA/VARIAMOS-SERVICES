@@ -1,0 +1,21 @@
+version: "3"
+services:
+  variamos-services:
+    image: variamos-services
+    ports:
+      - "8080:8080"
+    networks:
+      - variamos-mysql
+    depends_on:
+      - mysqldb
+ 
+  mysqldb:
+    image: mysql
+    networks:
+      - variamos-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=variamos
+      - MYSQL_DATABASE=variamos  
+
+networks:
+  variamos-mysql:

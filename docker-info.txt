@@ -1,3 +1,5 @@
 #with watch tower
 sudo docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock v2tec/watchtower
 sudo docker run -d -p 8080:8080 --name variamos-server danielgara/variamos-services
+#sql
+sudo docker run -d -p 3306:3306 --name my-sql  -e MYSQL_ROOT_PASSWORD=variamos variamos-mysql
