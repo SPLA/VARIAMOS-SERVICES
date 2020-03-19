@@ -9,7 +9,7 @@ import java.util.Map;
 import org.springframework.boot.autoconfigure.*;
 import org.springframework.web.bind.annotation.*;
 
-//import org.apache.tomcat.util.codec.binary.Base64;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -37,7 +37,7 @@ public class Repo {
 	@RequestMapping(value="/Repo/test", method=RequestMethod.GET, produces="text/plain")
 	@ResponseBody
 	public String home() {
-		String token = "GITHUB-TOKEN"; 
+		String token = "9091cc2b16d57ffcd1f1bfba62aae9fc427e133c"; 
 		//String url = "https://api.github.com/repos/danielgara/test/commits";
 		//getHttp(token, url);
 		
@@ -63,7 +63,7 @@ public class Repo {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = getHeaders(token);
 	    
-	    GHRepo gh = new GHRepo("test3","first repo","http://danielgara.com");
+	    GHRepo gh = new GHRepo("TestVariamosRepo","Repositorio  de prueba","https://dev.azure.com/jsoto25/Maestr%C3%ADa%20SPLE");
 	    String json = new Gson().toJson(gh);
 
 	    HttpEntity<String> entity = new HttpEntity<String>(json, headers);
@@ -122,7 +122,7 @@ public class Repo {
 	
 	public HttpHeaders getHeaders(String token) {
 		token = token + ":x-oauth-basic";
-		String authString = "Basic "; //+ Base64.encodeBase64String(token.getBytes());
+		String authString = "Basic "+ Base64.encodeBase64String(token.getBytes());
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 	    headers.setContentType(MediaType.APPLICATION_JSON);
