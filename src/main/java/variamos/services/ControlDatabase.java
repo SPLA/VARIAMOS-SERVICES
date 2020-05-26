@@ -27,13 +27,10 @@ public class ControlDatabase {
 	@CrossOrigin
 	@RequestMapping(value = "Control/dataVisualization", method =  RequestMethod.POST  ,produces="text/plain")
 	@ResponseBody
-	public String DataArduino(@RequestBody String data_collected) {
-		
+	public String DataArduino(@RequestBody String data_collected) {		
 		text=data_collected;
 		return textVue;
 	}
-	
-	
 	
 	@CrossOrigin
 	@RequestMapping(value="Control/getData", method= RequestMethod.GET, produces="text/plain")
@@ -44,32 +41,27 @@ public class ControlDatabase {
 	
 	
 	@CrossOrigin
-	@RequestMapping( value = "Control/saveBD", method = RequestMethod.POST ,produces="text/plain"
-			)
+	@RequestMapping( value = "Control/saveBD", method = RequestMethod.POST ,produces="text/plain")
 	@ResponseBody
 	public String SaveData(@RequestBody String data_collected) {
 		if(data_collected.length()>5)
 		{
 			JSONObject json = new JSONObject(data_collected);
 			String nameProject =   (String) json.get("name");
-			
-		
 			Control myControl = ControlRepository.findAllByName(nameProject);
 			if(myControl==null)	{
 				ControlRepository.save(new Control(data_collected,nameProject));
 			}
 			else {
-			myControl.setdata(data_collected);
-			ControlRepository.save(myControl );
+				myControl.setdata(data_collected);
+				ControlRepository.save(myControl );
 			}
 		}
 		else {
 			textVue=data_collected;
 		}
 		
-		return data_collected;
-		
-		
+	return data_collected;
 	}
     
 }
