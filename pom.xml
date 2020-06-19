@@ -102,6 +102,11 @@
 			<scope>runtime</scope>
 		</dependency>
 		<!-- MySQL dependencies -->
+		<dependency>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit</artifactId>
+			<version>5.7.0.202003110725-r</version>
+		</dependency>
 	</dependencies>
 
 	<!-- Package as an executable jar -->
