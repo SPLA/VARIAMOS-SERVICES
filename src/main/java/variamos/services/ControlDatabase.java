@@ -19,29 +19,28 @@ public class ControlDatabase {
 	
 	@Autowired
 	ControlRepository ControlRepository;
-	
-    private String text="";
+    private String textArduino="";
 	private String textVue="0";
 
 	
 	@CrossOrigin
-	@RequestMapping(value = "Control/dataVisualization", method =  RequestMethod.POST  ,produces="text/plain")
+	@RequestMapping(value = "/Control/dataVisualization", method =  RequestMethod.POST  ,produces="text/plain")
 	@ResponseBody
 	public String DataArduino(@RequestBody String data_collected) {		
-		text=data_collected;
+		textArduino=data_collected;
 		return textVue;
 	}
 	
 	@CrossOrigin
-	@RequestMapping(value="Control/getData", method= RequestMethod.GET, produces="text/plain")
+	@RequestMapping(value="/Control/getData", method= RequestMethod.GET, produces="text/plain")
 	@ResponseBody
 	public String DataVuejs() {
-		return text;
+		return textArduino;
 	}
 	
 	
 	@CrossOrigin
-	@RequestMapping( value = "Control/saveBD", method = RequestMethod.POST ,produces="text/plain")
+	@RequestMapping( value = "/Control/saveBD", method = RequestMethod.POST ,produces="text/plain")
 	@ResponseBody
 	public String SaveData(@RequestBody String data_collected) {
 		if(data_collected.length()>5)
